@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<!--UTF-8で読み込んでね pls read as UTF-8-->
+<html>
+	<!-- 書いたヤツ：あーるけ(Arrk) Twitter:@Arrk_YR -->
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<link rel="shortcut icon" href="assets/logo.png" type="image/x-icon">
+		<title>折れ線の距離を計算するツール</title>
+		<style>
+			body{
+				text-align: center;
+				line-height: 1.4em;
+			}
+			.overview{
+				background-color: #0001;
+			}
+			.overview-inner{
+				overflow-y: hidden;
+				height: 6.2em;
+				transition: 1s cubic-bezier(0.8, 0, 0.2, 1) 0.5s;
+			}
+			#openOverview:checked ~ label .overview-inner{
+				height: calc(1.4em * 19 + 0.1em);
+				overflow-y: auto;
+				/*スクロールバー非表示 ここから*/
+				-ms-overflow-style: none;
+				scrollbar-width: none;
+			}
+			.overview-inner::-webkit-scrollbar{
+				display: none;
+				/*スクロールバー非表示 ここまで*/
+			}
+			.overview-outer{
+				overflow-y: hidden;
+				height: 30px;
+				transition: 1s ease-in-out 0.5s;
+			}
+			#openOverview:checked ~ label .overview-outer{
+				height: 0px;
+			}
+			.triangle{
+				margin: 0 auto;
+				text-align: center;
+				width: 0;
+				height: 0;
+				border: 30px solid transparent;
+				border-top: 25px solid #6bf5c8;
+				border-bottom: 0px solid #65d3f1;
+				transition: 0.6s ease-out 0s;
+			}
+			.overview:hover .triangle{
+				border-top: 20px solid #51b0aa;
+				margin-top: 5px;
+				margin-bottom: 0;
+			}
+			#openOverview:checked ~ label .triangle{
+				border-top: 0px solid #6bf5c8;
+				border-bottom: 25px solid #65d3f1;
+			}
+			#openOverview:checked ~ label .overview:hover .triangle{
+				border-top: 0px solid #51b0aa;
+				border-bottom: 20px solid #51b0aa;
+			}
+			table{
+				border-collapse: collapse;
+				/* margin-bottom: 71px; */
+			}
+			:is(table:focus-within, table:hover){
+				margin-bottom: 0;
+			}
+			tr input:focus-within{
+				background-color: #ff02;
+			}
+			th,td{
+				border: solid 1px #000;
+				padding: 10px;
+				min-width: 65px;
+			}
+			/* th:hover{
+				padding: unset 10px;
+			} */
+			#mainTable td{
+				padding: 0;
+			}
+			#mainTable td:nth-child(1){
+				width: 13em;
+			}
+			td input{
+				width: 7em;
+				height: 45px;
+				border: 0;
+				text-align:end;
+				background-color: transparent;
+				box-sizing: border-box;
+			}
+			.switchCell:is(:hover, :focus-within) td:nth-child(n+2):nth-child(-n+3) input{
+				/* height: 105px; */
+				font-weight: bolder;
+			}
+			:is(.switchCell:hover, .switchCell:focus-within) .hiddenCell{
+				display: inline;
+			}
+			:is(.switchCell:hover, .switchCell:focus-within) .hiddenCell input{
+				width: 4em;
+				height: 35px;
+				/* margin-left: 30px; */
+				border: solid 1px;
+				text-align: center;
+				background-color: #eee8;
+			}
+			:is(.switchCell:hover, .switchCell:focus-within) .shownCell{
+				display: none;
+			}
+			.hiddenCell{
+				display: none;
+			}
+			input{
+				height: 35px;
+			}
+		</style>
+	</head>
+
+	<body id="body">
+		<h1>距離計算(仮)</h1>
+		<input type="checkbox" name="" id="openOverview" style="display: none;">
+		<label for="openOverview">
+			<section class="overview" style="width: 80%;margin: 0 auto">
+				<hr>
+				<p class="overview-inner">
+					xz平面上の複数点の距離の合計を算出します。<br>
+					入力できる座標の数値は0.5単位となっております。<br>
+					道路や鉄道の長さの計算に役立つかも。<br>
+					<br>
+					--- 操作 --- <br>
+					下の表にフォーカスすると、以下のボタンが出現します。<br>
+					「複製」は座標をコピーします。<br>
+					「削除」は座標を削除します。<br>
+					「中間」は座標を前後をもとに中点に設定します。<br>
+					<br>
+					また、表の下部にある「次の区間へ移動する」ボタンは、<br>
+					最後尾の座標を先頭にコピーし、それ以外をリセットします。<br>
+					<br>
+					--- Tips ---<br>
+					Tabキー:次の項目へ移動<br>
+					Shift + Tab:前の項目へ移動<br>
+					上下矢印:数値の調整<br>
+					<br>
+					クリックして閉じる
+				</p>
+				<p>
+					<div class="overview-outer">クリックして展開</div>
+					<div class="triangle"></div>
+				</p>
+				<hr>
+			</section>
+		</label>
+		<br>
+		<div id="maincontent">
+			<div id="table">
+				<b id = "totalDist">ここに道のりが表示されます</b>
+				<table align="center" id="mainTable">
+					<col style="background-color: #cfe;">
+					<tr style="background-color: #def;">
+						<th>--</th>
+						<th>x</th>
+						<th>z</th>
+						<th style="width: 100px;">各線分の距離</th>
+					</tr>
+					<tr class="switchCell">
+						<td>
+							<span class="shownCell">0</span>
+							<span class="hiddenCell">
+								<input type="button" value="+複製" onclick="insRow(0)"><input type="button" value="-削除" onclick="delRow(0)"><input type="button" value="=中間" disabled="true">
+							</span>
+						</td>
+						<td><input type="number" id="x0" step="0.5" value="0"></td>
+						<td><input type="number" id="z0" step="0.5" value="0"></td>
+						<td>------</td>
+					</tr>
+					<tr class="switchCell">
+						<td>
+							<span class="shownCell">1</span>
+							<span class="hiddenCell">
+								<input type="button" value="+複製" onclick="insRow(1)"><input type="button" value="-削除" onclick="delRow(1)"><input type="button" value="=中間" onclick="getAve(1)">
+							</span>
+						</td>
+						<td><input type="number" id="x1" step="0.5" value="10"></td>
+						<td><input type="number" id="z1" step="0.5" value="20"></td>
+						<td id="distance1"></td>
+					</tr>
+				</table>
+				<p>
+					<input type="button" value="末尾を複製" onclick="insRow(-1)">
+					<input type="button" value="末尾を削除" onclick="delRow(-1)">
+					<input type="button" value="次の区間へ移動する" id="inheritLastValue"><br><br>
+					<input type="button" value="点0からの合計距離を表示する" id="switchDist" onclick="switchDist()" style="width: 15em;">
+					<input type="button" class="switchLayout" value="プレビューを横に表示する" onclick="switchLayout()">
+				</p>
+				<b id = "totalDist2">ここに道のりが表示されます</b>
+				<p id = "prevDist"></p>
+			</div>
+			<div id="preview">
+				<div style="margin: auto 0;">
+					<p>
+						プレビューの文字サイズ：
+						<input type="button" value="-10" onclick="Numsizechange(-10)">
+						<input type="number" id="sizeofNum" value="32" style="width: 3em;text-align: right;" min="0" max="99">
+						<input type="button" value="+10" onclick="Numsizechange(+10)">
+					</p>
+					<canvas id="cv" width="400px" height="400px" style="background-color: #0001;"></canvas><br>
+					<input type="button" class="switchLayout" value="プレビューを横に表示する" onclick="switchLayout()">
+				</div>
+			</div>
+		</div>
+
+		<hr style="clear: both;">
+		<p>
+			2022/11/06 芽河製作所<br>
+			Ver: release - 0.6 (development)<br>
+			(c)2022 Arrk Twitter: <a href="https://twitter.com/Arrk_YR" target="_blank">@Arrk_YR</a><br>
+			<br>
+			--- 更新履歴 ---<br>
+			<table align="center">
+				<tr>
+					<td>release - 0.6 (development)</td>
+					<td>2022/11/06</td>
+					<td>表の1列目にフォーカスした際に、<br>高さが変化しないよう修正。</td>
+				</tr>
+				<tr>
+					<td>release - 0.5 (development)</td>
+					<td>2022/11/01</td>
+					<td>詳細の表示の切り替えをホバーからクリックに変更。<br>表にフォーカスしたときの高さの変化を緩和。<br>プレビューを横表示に切り替える機能を実装。<br>距離の表示を切り替えられる機能を実装。</td>
+				</tr>
+				<tr>
+					<td>release - 0.4 (development)</td>
+					<td>2022/10/30</td>
+					<td>プレビュー内の文字サイズを変更できる機能を実装。<br>同時に挙動も微調整。</td>
+				</tr>
+				<tr>
+					<td>release - 0.3A (development)</td>
+					<td rowspan="2">2022/10/28</td>
+					<td>表にフォーカスした時に<br>幅が変化しないよう修正。</td>
+				</tr>
+				<tr>
+					<td>release - 0.3 (development)</td>
+					<td>点の複製・削除をすべての点に実装。<br>中点設定機能を追加。<br>ボタンの表記を一部変更。<br>長くなった詳細を省スペース化。</td>
+				</tr>
+				<tr>
+					<td>release - 0.2 (development)</td>
+					<td>2022/10/22</td>
+					<td>経路概形を描画する機能を実装。</td>
+				</tr>
+				<tr>
+					<td>release - 0.1 (development)</td>
+					<td>2022/10/21</td>
+					<td>誕生。</td>
+				</tr>
+				<tr>
+					<td></td>
+					<td>2022/10/19</td>
+					<td>制作開始。</td>
+				</tr>
+				<tr>
+					<td colspan="3">最新バージョンの内容が書かれていない場合は微妙な修正です<br>近々親サイトが完成次第本公開予定。</td>
+				</tr>
+			</table>
+		</p>
+	</body>
+</html>
+
+<script>
+	console.log("\n\n\n◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤")
+	//最初からある入力枠の取得
+	let posx = [document.getElementById("x0"), document.getElementById("x1")];
+	let posz = [document.getElementById("z0"), document.getElementById("z1")];
+	let x = [document.getElementById("x0").value, document.getElementById("x1").value];
+	let z = [document.getElementById("z0").value, document.getElementById("z1").value];
+	let drawPosx = [0];
+	let drawPosz = [0];
+	let totalDist;
+	posx[0].addEventListener("input", getDist);
+	posx[1].addEventListener("input", getDist);
+	posz[0].addEventListener("input", getDist);
+	posz[1].addEventListener("input", getDist);
+	let msg1 = document.getElementById("totalDist");
+	let msg2 = document.getElementById("totalDist2");
+	let maxx, minx, maxz, minz;
+	let range = [0,0];
+	let gradient;
+
+	const WIDTH = 400, HEIGHT = 400;
+	//入力欄が更新されたら計算する
+	function getDist() {
+		totalDist = 0;
+		let mid = [0,0];
+		drawPosx = [0];
+		drawPosz = [0];
+		x = [document.getElementById("x0").value];
+		z = [document.getElementById("z0").value];
+
+		minx = document.getElementById("x0").value; 
+		minz = document.getElementById("z0").value;
+		maxx = minx;
+		maxz = minz;
+
+		for(i = 0; i < posx.length - 1; i++){
+			x.push(document.getElementById("x" + (i+1)).value);
+			z.push(document.getElementById("z" + (i+1)).value);
+
+			let dist = Math.abs(x[i] - x[i+1])**2 + Math.abs(z[i] - z[i+1])**2;
+			dist = Math.sqrt(dist);
+
+			let distance = document.getElementById("distance" + (i+1));
+			totalDist += dist;
+			if(mode === "segment") distance.innerText = Math.round(dist * 10000) / 10000;
+			else distance.innerText = Math.round(totalDist * 10000) / 10000;
+		}
+		maxx = Math.max(...x);
+		minx = Math.min(...x);
+		maxz = Math.max(...z);
+		minz = Math.min(...z);
+		mid[0] = (maxx + minx) / 2.0;
+		mid[1] = (maxz + minz) / 2.0;
+		totalDist = Math.round(totalDist * 100) / 100.0;
+		msg1.innerText = "道のり：" + totalDist;
+		msg2.innerText = "道のり：" + totalDist;
+		range[0] = maxx - minx;
+		range[1] = maxz - minz;
+		if(Math.max(...range) == 0){
+			gradient 
+		}
+		gradient = 400 / Math.max(...range);
+
+		for(i = 0; i < posx.length; i++){
+			drawPosx[i] = Math.round((gradient * (x[i] - mid[0])) + 200);
+			drawPosz[i] = Math.round((gradient * (z[i] - mid[1])) + 200);
+		}
+	}
+	getDist();
+	
+	//行を追加するボタン
+	const tableElem = document.getElementById("mainTable");
+	const insertRow = document.getElementById('insertRow');
+	let pointCount = posx.length;
+	function insRow(clickedPos){
+		//clickedPos:押されたボタンの番号(起番は0)
+		if(clickedPos == -1) clickedPos = pointCount - 1;
+		console.log(parseInt(clickedPos) + 1);
+		pointCount++;
+		console.log("pointCount = " + pointCount);
+
+		const trElem = tableElem.tBodies[0].insertRow(-1);
+		trElem.setAttribute("class", "switchCell");
+
+		const cellElem0 = trElem.insertCell(0);
+		const cellElem1 = trElem.insertCell(1);
+		const cellElem2 = trElem.insertCell(2);
+		const cellElem3 = trElem.insertCell(3);
+
+		tableElem.rows[clickedPos + 1].animate({background: ["#6bf5c8", "#fff0"],height: ["0", "auto"],},{duration: 2500});
+		tableElem.rows[clickedPos + 2].animate({background: ["#6bf5c8", "#fff0"],height: ["0", "auto"],},{duration: 2500});
+		x.splice(clickedPos, 0, x[clickedPos]);
+		z.splice(clickedPos, 0, z[clickedPos]);
+		console.log(x);
+
+		cellElem0.innerHTML = "<span class=\"shownCell\">" + (pointCount - 1) + "</span><span class=\"hiddenCell\"><input type=\"button\" value=\"+複製\" onclick=\"insRow(" + (pointCount - 1) + ")\"><input type=\"button\" value=\"-削除\" onclick=\"delRow(" + (pointCount - 1) + ")\"><input type=\"button\" value=\"=中間\" onclick=\"getAve(" + (pointCount - 1) + ")\"></span>";
+
+		cellElem1.innerHTML = "<input type=\"number\" id=\"x" + (pointCount - 1) + "\" step=\"0.5\" value=\"" + x[pointCount - 1] + "\">";
+		cellElem2.innerHTML = "<input type=\"number\" id=\"z" + (pointCount - 1) + "\" step=\"0.5\" value=\"" + z[pointCount - 1] + "\">";
+		cellElem3.innerHTML = "";
+		cellElem3.setAttribute("id", "distance" + (pointCount - 1));
+
+		posx.push(document.getElementById("x" + (pointCount - 1)));
+		posz.push(document.getElementById("z" + (pointCount - 1)));
+		posx[pointCount - 1].addEventListener("input", getDist);
+		posz[pointCount - 1].addEventListener("input", getDist);
+		console.log(posx);
+
+		for(i = clickedPos; i < pointCount - 1; i++){
+			posx[i].value = x[i];
+			posz[i].value = z[i];
+		}
+		console.log(x);
+
+		getDist();
+	}
+
+	//行を削除するボタン
+	function delRow(clickedPos){
+		if(clickedPos == -1) clickedPos = pointCount - 1;
+		if(pointCount > 1){
+			x.splice(clickedPos, 1);
+			z.splice(clickedPos, 1);
+			for(i = clickedPos; i < pointCount - 1; i++){
+				posx[i].value = x[i];
+				posz[i].value = z[i];
+			}
+			console.log(x);
+			console.log(posx);
+			posx.pop();
+			posz.pop();
+			pointCount--;
+			tableElem.tBodies[0].deleteRow(-1);
+		}
+		getDist();
+	}
+
+	//前後の中間値とする
+	function getAve(clickedPos){
+		if(clickedPos != 0 && clickedPos != pointCount - 1){
+			posx[clickedPos].value = Math.round((+x[clickedPos - 1] + +x[+clickedPos + 1]) * 2)/ 4;
+			posz[clickedPos].value = Math.round((+z[clickedPos - 1] + +z[+clickedPos + 1]) * 2)/ 4;
+			tableElem.rows[clickedPos + 1].animate({background: ["#f0f079", "#fff0"],height: ["0", "auto"],},{duration: 2500});
+
+			getDist();
+		}
+	}
+
+	//最後の値を最初に移動し、リセットする
+	const inheritLastValue = document.getElementById("inheritLastValue");
+	inheritLastValue.addEventListener("click", inhLastValue);
+	function inhLastValue(){
+		posx[0].value = posx[posx.length-1].value;
+		posz[0].value = posz[posz.length-1].value;
+		for(i= 1; i < posx.length - 1; i++){
+			posx[i].value = 0;
+			posz[i].value = 0;
+		}
+		prevDist.innerText = "前の道のり：" + totalDist;
+		getDist();
+		msg2.innerText = (pointCount - 1) + "番の座標を先頭にコピーしました"
+	}
+
+	//合計距離を切り替える
+	var mode = "segment";
+	let switchDistContent = document.getElementById("switchDist");
+	function switchDist(){
+		if(mode == "segment"){
+			mode = "total";
+			switchDistContent.value = "各線分の距離を表示する"
+			tableElem.rows[0].cells[3].innerText = "合計距離";
+		}else{
+			mode = "segment";
+			switchDistContent.value = "点0からの合計距離を表示する"
+			tableElem.rows[0].cells[3].innerText = "各線分の距離";
+		}
+		// console.log(mode);
+		getDist();
+	}
+
+	//描画する
+	let sizeofNum = +document.getElementById("sizeofNum").value;
+	const cv = document.getElementById("cv");
+	const context = cv.getContext("2d");
+	context.lineWidth = 2;
+	function Numsizechange(delta){
+		// console.log(delta);
+		sizeofNum = sizeofNum + delta;
+		if(sizeofNum < 0) sizeofNum = 0;
+		if(sizeofNum > 100) sizeofNum = 100;
+		document.getElementById("sizeofNum").value = sizeofNum;
+	}
+	function draw(timestamp){
+		// console.log(sizeofNum);
+		// msg2.innerText = drawPosx.toString();
+		//最大値最小値から中心の値を算出
+		sizeofNum = +document.getElementById("sizeofNum").value;
+		context.font = sizeofNum + "px sans serif";
+		context.clearRect(0, 0, WIDTH, HEIGHT);
+		context.beginPath();
+		context.moveTo(drawPosx[0], drawPosz[0]);
+		context.strokeStyle = "#00F"
+		context.strokeRect(drawPosx[0]-10, drawPosz[0]-10, 20, 20)
+		context.strokeStyle = "#000"
+		for(i = 0; i < drawPosx.length; i++){
+			context.textAlign = "center";
+			let dx = drawPosx[i];
+			let dz = drawPosz[i];
+			context.lineTo(dx, dz);
+			if(i == 0 || i == drawPosx.length-1){
+			}else{
+				context.strokeRect(drawPosx[i]-5, drawPosz[i]-5, 10, 10);
+			}
+			if(dx < (sizeofNum / 3 + 10)){
+				dx = 10;
+				context.textAlign = "start";
+			} else if(dx > 390 - (sizeofNum / 3)){
+				dx = 390;
+				context.textAlign = "end";
+			}
+			//上寄りの場合
+			if(dz < 25 + sizeofNum) dz = 20 + sizeofNum;
+			//文字を描く
+			context.fillText(i, dx, dz - 13, 50);
+		}
+		context.stroke();
+		context.strokeStyle = "#0F0"
+		context.strokeRect(drawPosx[drawPosx.length-1]-10, drawPosz[drawPosx.length-1]-10, 20, 20)
+
+		window.requestAnimationFrame((ts) => draw(ts));
+	}
+	window.requestAnimationFrame((ts) => draw(ts));
+
+	//レイアウトを変更する
+	const maincontent= document.getElementById("maincontent");
+	const table = document.getElementById("table");
+	const preview = document.getElementById("preview");
+	const switchLayoutContent = document.getElementsByClassName("switchLayout");
+	// console.log(switchLayoutContent);
+	let layout = "vertical";
+	function switchLayout(){
+		if(layout == "vertical"){
+			maincontent.setAttribute("style", "display:flex; width:max-content; margin :0 auto;");
+			table.setAttribute("style", "margin:10px;")
+			preview.setAttribute("style", "padding:10px; /*background-color:#fffc;*/ border:solid 1px; margin-top:auto; margin-bottom:auto");
+			switchLayoutContent[0].value = "プレビューの場所を戻す";
+			switchLayoutContent[1].value = "プレビューを表の下に表示する";
+			layout = "horizonal";
+		}else{
+			maincontent.setAttribute("style", "");
+			table.setAttribute("style", "");
+			preview.setAttribute("style", "");
+			switchLayoutContent[0].value = "プレビューを横に表示する"
+			switchLayoutContent[1].value = "プレビューを横に表示する"
+			layout = "vertical";
+		}
+	}
+
+</script>

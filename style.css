@@ -1,0 +1,102 @@
+body{
+  background-color: #fff;
+}
+
+img{
+  max-width: 100%;
+}
+
+#menu{
+  margin-left: 5px;
+}
+#menu .a_bg{
+  background: linear-gradient(120deg, #6bf5c8, #0099ff);
+  position: relative;
+  float: left;
+  height: calc(1em + 14px);
+  margin: 0px 5px;
+  margin-bottom: 5px;
+  padding: 3px;
+  transition: all .3s;
+  border-radius: 5px;
+}
+
+#menu a,
+.morebtn,
+.hidebtn{
+  height: 1em;
+  margin: 5px 0;
+  padding: 3px;
+  transition: all .3s ease;
+  color: navy;
+  text-decoration: none;
+  font-weight: bolder;
+  border: solid 0 #000;
+  border-radius: 5px;
+}
+
+#menu a:hover,
+.morebtn:hover,
+.hidebtn{
+  background: #0008;
+  color: white;
+  border: solid 3px #0008;
+  padding: 0;
+  width: 100%;
+}
+.dtl input:checked ~ .a_bg{
+  display: none;
+}
+.hidden{
+  display: none;
+}
+.hidden .a_bg{
+  float: left;
+  margin-top: 0;
+  margin-bottom: 3px;
+  padding: 0;
+}
+.dtl input:checked ~ .hidden{
+  display: inline;
+}
+.hidebtn{
+  padding: 0px;
+}
+
+#main{
+  background-color: #c0ffc6;
+  padding-bottom: 5em;
+  margin: 5px;
+  margin-bottom: 100px;
+}
+
+@media(min-width:700px){
+  body{
+    width: 700px;
+  }
+  #menu{
+    display: block;
+    float: left;
+    width: 130px;
+    margin: 0;
+  }
+  #menu .a_bg{
+    width: 115px;
+    height: auto;
+    padding: 0;
+    text-align: center;
+    margin: 5px;
+    margin-top: 0;
+   }
+  #menu a,
+  .morebtn,
+  .hidebtn{
+    width: 100%;
+    display: block;
+    margin: 0;
+ }
+  #main{
+    margin-left: 130px;
+  }
+}
+
