@@ -6,7 +6,7 @@
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<link rel="shortcut icon" href="assets/logo.png" type="image/x-icon">
-		<title>折れ線の距離を計算するツール</title>
+		<title>道のり計算ツール | 芽河製作所</title>
 		<style>
 			body{
 				text-align: center;
@@ -122,8 +122,8 @@
 	</head>
 
 	<body id="body">
-		<h1>距離計算(仮)</h1>
-		<input type="checkbox" name="" id="openOverview" style="display: none;">
+		<h1>道のり計算ツール</h1>
+		<input type="checkbox" id="openOverview" style="display: none;">
 		<label for="openOverview">
 			<section class="overview" style="width: 80%;margin: 0 auto">
 				<hr>
@@ -216,8 +216,8 @@
 
 		<hr style="clear: both;">
 		<p>
-			2022/11/06 芽河製作所<br>
-			Ver: release - 0.6 (development)<br>
+			2022/11/11 芽河製作所<br>
+			Ver: release - 0.6A<br>
 			(c)2022 Arrk Twitter: <a href="https://twitter.com/Arrk_YR" target="_blank">@Arrk_YR</a><br>
 			<br>
 			--- 更新履歴 ---<br>
@@ -225,7 +225,7 @@
 				<tr>
 					<td>release - 0.6 (development)</td>
 					<td>2022/11/06</td>
-					<td>表の1列目にフォーカスした際に、<br>高さが変化しないよう修正。</td>
+					<td>表の1列目にフォーカスした際に、<br>高さが変化しないよう修正。<br>(0.6A) タイトル正式決定</td>
 				</tr>
 				<tr>
 					<td>release - 0.5 (development)</td>
@@ -238,13 +238,9 @@
 					<td>プレビュー内の文字サイズを変更できる機能を実装。<br>同時に挙動も微調整。</td>
 				</tr>
 				<tr>
-					<td>release - 0.3A (development)</td>
-					<td rowspan="2">2022/10/28</td>
-					<td>表にフォーカスした時に<br>幅が変化しないよう修正。</td>
-				</tr>
-				<tr>
 					<td>release - 0.3 (development)</td>
-					<td>点の複製・削除をすべての点に実装。<br>中点設定機能を追加。<br>ボタンの表記を一部変更。<br>長くなった詳細を省スペース化。</td>
+					<td>2022/10/28</td>
+					<td>点の複製・削除をすべての点に実装。<br>中点設定機能を追加。<br>ボタンの表記を一部変更。<br>長くなった詳細を省スペース化。<br>(0.3A)表にフォーカスした時に<br>幅が変化しないよう修正。</td>
 				</tr>
 				<tr>
 					<td>release - 0.2 (development)</td>
@@ -270,7 +266,7 @@
 </html>
 
 <script>
-	console.log("\n\n\n◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤")
+// 	console.log("\n\n\n◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤")
 	//最初からある入力枠の取得
 	let posx = [document.getElementById("x0"), document.getElementById("x1")];
 	let posz = [document.getElementById("z0"), document.getElementById("z1")];
@@ -346,9 +342,9 @@
 	function insRow(clickedPos){
 		//clickedPos:押されたボタンの番号(起番は0)
 		if(clickedPos == -1) clickedPos = pointCount - 1;
-		console.log(parseInt(clickedPos) + 1);
+// 		console.log(parseInt(clickedPos) + 1);
 		pointCount++;
-		console.log("pointCount = " + pointCount);
+// 		console.log("pointCount = " + pointCount);
 
 		const trElem = tableElem.tBodies[0].insertRow(-1);
 		trElem.setAttribute("class", "switchCell");
@@ -362,7 +358,7 @@
 		tableElem.rows[clickedPos + 2].animate({background: ["#6bf5c8", "#fff0"],height: ["0", "auto"],},{duration: 2500});
 		x.splice(clickedPos, 0, x[clickedPos]);
 		z.splice(clickedPos, 0, z[clickedPos]);
-		console.log(x);
+// 		console.log(x);
 
 		cellElem0.innerHTML = "<span class=\"shownCell\">" + (pointCount - 1) + "</span><span class=\"hiddenCell\"><input type=\"button\" value=\"+複製\" onclick=\"insRow(" + (pointCount - 1) + ")\"><input type=\"button\" value=\"-削除\" onclick=\"delRow(" + (pointCount - 1) + ")\"><input type=\"button\" value=\"=中間\" onclick=\"getAve(" + (pointCount - 1) + ")\"></span>";
 
@@ -375,13 +371,13 @@
 		posz.push(document.getElementById("z" + (pointCount - 1)));
 		posx[pointCount - 1].addEventListener("input", getDist);
 		posz[pointCount - 1].addEventListener("input", getDist);
-		console.log(posx);
+// 		console.log(posx);
 
 		for(i = clickedPos; i < pointCount - 1; i++){
 			posx[i].value = x[i];
 			posz[i].value = z[i];
 		}
-		console.log(x);
+// 		console.log(x);
 
 		getDist();
 	}
