@@ -1,0 +1,30 @@
+/*2022/6/17 by Arrk_YR*/
+/*詳細表示*/
+
+/*詳細を表示*/
+
+label{
+  font-size: larger;
+  background-color: #9bdaff;
+  margin-top: 20px;
+  margin-left: 20px;
+  padding-right: 20px;
+}
+
+.detailbox {
+  margin: 10px 0 10px 0;
+}
+
+.detail,
+.detailbox input{
+  display: none;
+}
+
+.detailbox input:checked ~ .detail{
+  display: block;
+}
+
+.detailbox input:checked ~ .show{
+  display: none;
+}
+

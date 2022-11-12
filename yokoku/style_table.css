@@ -1,0 +1,42 @@
+/*2022/6/17 by Arrk_YR*/
+/*表要素指定*/
+
+th{
+  background: linear-gradient(90deg, #5dbcf2, #9bdaff 30% 70%, #5dbcf2);
+  padding: 3px 7px 3px 7px ;
+}
+
+/*更新表*/
+
+.changelog{
+  margin:10px 20px 10px 20px;
+}
+
+.changelog td{
+  padding: 5px;
+  vertical-align: top;
+}
+
+.changelog tr:nth-child(odd){
+  background-color : #0000ff11;
+}
+
+/*駅一覧*/
+
+.yrstn th{
+  background-color: #6bf5c8;
+}
+
+.yrstn tr:nth-child(odd){
+  background-color : #0000ff11;
+}
+
+.yrstn{
+  overflow-x: scroll;
+  white-space: nowrap;
+  margin-left: 25px;
+}
+
+.yrstn td{
+  padding: 2px;
+}

@@ -1,0 +1,85 @@
+/*2022/6/17 by Arrk_YR*/
+/*サイドバー指定*/
+
+/*幅が狭いとき、menuAを表示*/
+/*幅が広いとき、menuBを表示*/
+
+#menuA{
+  float: right;
+}
+
+@media(min-width:750px){
+  #menuA{
+    display: none;
+  }
+}
+
+@media(max-width:749.9px){
+  #menuB{
+    display: none;
+  }
+}
+
+@media(max-width:670px){
+  #menuA{
+    float: left;
+    margin-left: 160px;
+    margin-right: -300px;
+  }
+}
+
+
+.hv{
+  /*ホバー時に表示する、隠れている文字のクラス*/
+  display: none;
+}
+
+#menuA td a{
+  display: block;
+  text-decoration: none;
+  color: white;
+  padding: 18px;
+}
+
+:is(#menuA,#menuB) td{
+  background: linear-gradient(180deg, #14746f, #074542);
+  color: white;
+  text-align: center;
+  transition: all 500ms 0s ease-out;
+  white-space: nowrap;
+  border-radius: 5px;
+}
+
+#menuB td{width: 100%;}
+
+#menuA td:hover,
+#menuB td:hover{
+  background: linear-gradient(180deg, #a2f1f1, #6bf5c8);
+}
+
+#menuA a:hover .hv{display: inline;}
+
+#menuA a:hover .nhv{display: none;}
+
+:is(#menuA, #menuB) a:hover{
+  color: black;
+  font-weight: bold;
+}
+
+#menuB{
+  position: fixed;
+  margin-top: 62px;
+  width: 18%;
+  max-width: 300px;
+}
+
+#menuB table{width: 90%;}
+
+#menuB td a{
+  display: block;
+  text-decoration: none;
+  color: white;
+  padding-top: 7px;
+  padding-bottom: 7px;
+  width: 100%;
+}

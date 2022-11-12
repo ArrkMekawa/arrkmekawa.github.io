@@ -1,0 +1,159 @@
+/*2022/6/17 by Arrk_YR*/
+/*全体の指定*/
+@import url("https://fonts.googleapis.com/css2?family=M+PLUS+1p:wght@300;500&display=swap");
+
+body{
+  min-width: 550px;
+  font-size: 16px;
+  font-family: ms pgothic;
+  color: #06302e;
+}
+
+@media (min-width: 750px){
+  #main{
+    margin-left: 20%;
+    margin-right: 20%;
+  }
+}
+
+/*幅が広いとき*/
+
+@media (min-width: 750px){
+
+  .ls_img{
+    width: 49%;
+    margin-right: 0.6%;
+    margin-top: 5px;
+    float: left;
+  }
+
+  #logo1{
+    float: left;
+    position: fixed;
+  }
+
+  #logo2{
+    float: left;
+    position: fixed;
+    left: 70px;
+  }
+}
+
+/*幅が狭いとき*/
+
+@media(max-width:749.9px){
+  .ls_img{
+    width: 32%;
+    margin-right: 1%;
+    margin-top: 5px;
+    float: left;
+  }
+
+  #logo1{
+    float: left;
+    position: absolute;
+  }
+
+  #logo2{
+    float: left;
+    left: 70px;
+    position: absolute;
+  }
+}
+
+/*見出し*/
+
+h1{
+  background-image: url(../img/rayout/section.png);
+  background-position-y: bottom;
+  background-size: 100% 50%;
+  padding-left: 25px;
+  font-weight: 600;
+  margin-top: 8px;
+  font-size: 28px;
+}
+
+h2{
+  background-image: url(../img/rayout/title.png);
+  background-position-y: bottom;
+  background-size: 100% 50%;
+  padding-left: 25px;
+  font-weight: 400;
+  margin-top: 20px;
+  clear: both;
+}
+
+.heading{
+  text-decoration: none;
+  color: unset;
+}
+
+.heading :hover{
+  background-image: none;
+  color: #6bf5c8;
+}
+
+/*画像*/
+
+.rosenzu{
+  width: 100%;
+}
+
+/*本文*/
+
+p,
+h3{
+  padding: 0 20px 0 20px;
+}
+
+li{
+  padding-left: 20px;
+}
+
+.ls_img img{
+  width: 100%;
+  height: auto;
+}
+
+.ls_img p{
+  padding: 0;
+  height: 40px;
+}
+
+.download{
+  margin-left: 100px;
+  padding: 10px 5px;
+  color: white;
+  font-weight: bold;
+  transition: all 1s 0s cubic-bezier(1, 0, 0, 1);
+  background-color: #14746f;
+}
+
+.download:hover{
+  color: black;
+  background-color: orange;
+  margin-left: 80px;
+  padding: 10px 25px;
+  text-decoration: underline orange;
+}
+
+/*フッター*/
+
+#footer{
+  width: 100%;
+  background-color: #14746f;
+  text-align: center;
+  color: white;
+  margin-top: 50px;
+  padding-top: 50px;
+  padding-bottom: 200px;
+  clear: both;
+}
+
+#footer a{
+  color: white;
+}
+
+#ad_ov:hover{
+  display: none;
+}
