@@ -1,0 +1,245 @@
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>あーるけの隠れ家</title>
+		<link rel="icon" type="image/png" href="https://cdn.discordapp.com/attachments/736089887069175858/774540627748061184/8be645f9e8346335.png">
+		<link rel="stylesheet" href="ress_min.css">
+		<style>
+			#allcontent{
+				background-color: #7fd3;
+				min-width: 400px;
+				max-width: 960px;
+				height: 720px;
+				margin: 10px;
+			}
+			p{
+				padding-left: 10px;
+			}
+			img{
+				width: 100%;
+				height: 550px;
+				padding-top: 200px;
+				padding-bottom: 100px;
+				object-fit: cover;
+			}
+			#msg{
+				position: absolute;
+				width: 37%;
+				height: 680px;
+				max-width: calc(960px * 0.37);
+				background-color: #7fd3;
+			}
+			#msg label{
+				display: inline-block;
+				box-sizing: border-box;
+				width: calc(100% - 2px);
+				height: 1.5em;
+				margin: 0.5em 0;
+				border: solid 1px #fff;
+				color: white;
+				font-size: larger;
+				text-align: center;
+				overflow: hidden;
+				transition: all 1s cubic-bezier(0, 0, 0, 1);
+			}
+			#saying{
+				padding-top: calc(200px - 4.5em);
+			}
+			#maincontent{
+				width: 60%;
+				float: right;
+			}
+			label h3{
+				box-sizing: border-box;
+				/* background-color: #b8faec; */
+				border: 1px solid #0008;
+				border-radius: 6px;
+				padding: 2px;
+				transition: 1s ease;
+			}
+			.contents{
+				overflow-y: scroll;
+				height: 0px;
+				transition: 1s cubic-bezier(0, 0, 0, 1);
+				background: linear-gradient(#0000, #0852);
+				border-radius: 0px 15px;
+				/* スクロールバー非表示 ここから */
+				-ms-overflow-style: none;
+				scrollbar-width: none;
+			}
+			.contents::-webkit-scrollbar{
+				display: none;
+				/*スクロールバー非表示 ここまで*/
+			}
+			input{
+				display: none;
+			}
+			#msg label:nth-of-type(2){
+				width: 0px;
+			}
+			input#showall:checked ~ #msg label:nth-of-type(1){
+				width: 0px;
+			}
+			input#showall:checked ~ #msg label:nth-of-type(2){
+				width: calc(100% - 2px);
+			}
+			input#showall:checked ~ div .contents{
+				height: auto;
+				margin-bottom: 10px;
+			}
+			#maincontent input:checked ~ label h3{
+				/* color: white; */
+				/* background-color: #39635a; */
+				border: 3px solid #0008;
+				padding: 0px;
+			}
+			#maincontent input:checked ~ .contents{
+				height: 500px;
+			}
+
+			@media(max-width: 580px){
+				#maincontent{
+					width: auto;
+					float: none;
+				}
+				#msg{
+					display: inline-block;
+					position: inherit;
+					max-width: unset;
+					width: 100%;
+					height: unset;
+				}
+				#msg img{
+					height: 150px;
+					padding-top: 0px;
+					padding-left: 30%;
+					padding-bottom: 0px;
+				}
+				input#showall:checked ~ div .contents,
+				#maincontent input:checked ~ .contents{
+					height: auto;
+					/* background-color: #f001; */
+					padding-bottom: 2em;
+				}
+				input#showall:checked ~ div section:last-of-type{
+					padding-bottom: 7em;
+				}
+				#saying{
+					padding-top: 0px;
+				}
+				#footer{
+					position: absolute;
+					bottom: 30px;
+					width: calc(100% - 20px);
+					padding-left: 0;
+				}
+				input#showall:checked ~ * #footer{
+					background-color: white;
+					position: fixed;
+				}
+			}
+		</style>
+	</head>
+
+	<body>
+		<div id="allcontent">
+			<h2>あーるけの隠れ家</h2>
+			<input type="checkbox" id="showall">
+			<div id="msg">
+				<div style="position:absolute; font-size:small;" id="saying">
+					一<span id ="counter"></span>人目の来訪者だね。<br>
+					　そう大したものはないけど<br>
+					　　ゆっくりしていきな。<br>
+				</div>
+				<img src="https://media.discordapp.net/attachments/711837856959561772/1036181929042640946/2022-10-30_16.31.43A.jpg" alt="なんかのイラスト">
+				<label for="showall" class="showall" style="background-color: #121241;">すべて表示する</label><label for="showall" class="showall" style="background-color: #124134;">表示を戻す</label>
+				<p style="text-align: center; display: block;" id="footer">
+					<br>
+					(c)2022 Arrk<br>
+					更新:2022/11/16
+				</p>
+			</div>
+			<div id="maincontent">
+				<section>
+					<input type="radio" name="ct" id="ct1" checked="true" class="ct">
+					<label for="ct1"><h3>Introduction -自己紹介-</h3></label>
+					<div class="contents">
+						<p>
+							普段はMinecraftで架空都市「葉谷市」(詳細は以下リンクへ)を開発するなどしている、何の変哲もないそこらへんにいる人類。<br>
+							葉谷市開発の一環として、YR葉谷鉄道線の発車案内表示機のコマンドや、トロッコの見た目を変えるリソースパック(CEM含む)を生み出したり、かと思えばデザインやイラスト、HTML/CSS・Java・JSといったプログラミングも多少齧ったりと噛み砕けば多岐に渡る。<br>
+							2020年3月に葉谷市として<a href="https://ncc.mcjp.org">NCC新都市連合</a>に加盟、翌年には広報・役員を経て12月から総務として活動中。<br>
+							鉄道や東方も好き。常に旅に出たい気分。北海道に並々ならぬ憧れを持っている。
+							<br>
+							キャラデザはあほ毛と青い眼鏡、青みがかった緑色の眼が特徴。
+						</p>
+					</div>
+				</section>
+				<section>
+					<input type="radio" name="ct" id="ct2">
+					<label for="ct2"><h3>About -このページについて-</h3></label>
+					<div class="contents">
+						<p>
+							ーちょっとビンテージで、かつスタイリッシュな個人Webに憧れてー<br>
+							HTMLやCSS、JavaScriptの練習の成果物を置いておく場所であると同時に、メインで行っているMinecraft都市開発絡みの記事や芽河製作所と称して生産した有象無象を、ここインターネッツのジャングルに置くための小さな秘密基地。<br>
+							暇を持て余した時に書き連ねた諸々は以下Contentsにまとまっております。<br>
+						</p>
+					</div>
+				</section>
+				<section>
+					<input type="radio" name="ct" id="ct3">
+					<label for="ct3"><h3>Contents -成果物とか-</h3></label>
+					<div class="contents">
+						<div style="padding-left: 10px;">
+							<a href=""><h3>葉谷市</h3></a>
+							<p>
+								開発してる都市の市のページをデザインだけ模したもの。<br>
+								あまりにもディープな設定があるかもしれない。
+							</p>
+							<a href=""><h3>芽河製作所</h3></a>
+							<p>
+								葉谷市内に本社を構える、ジャンル問わず主にモノ作りを行う企業。<br>
+								制作したツールやらリソパやらの紹介・配布もここ。
+							</p>
+						</div>
+					</div>
+				</section>
+				<section>
+					<input type="radio" name="ct" id="ct4">
+					<label for="ct4"><h3>External -外部リンク-</h3></label>
+					<div class="contents">
+						<p>
+							<a href="">Twitter</a><br>
+							　@Arrk_YR/こちらメインアカウントです。建築の投稿とかは基本ココ。<br>
+							<a href="">神奈急車輌</a><br>
+							　相方かなきゅ～のサイト。アドオンとかRTMパックとかがあるよ。<br>
+							<a href="">NCC新都市連合</a><br>
+							　数多くのマイクラ都市開発勢が集う場所。是非ご覧ください。<br>
+							<a href="">新矢県</a>(開発準備中)<br>
+							　Minecraft現代建築勢による新たな矢を放つ。<br>
+							<a href="">真意倉高校物語</a><br>
+							　神絵師CKによる、現代建築勢のドタバタ学園劇。<br>
+						</p>
+					</div>
+				</section>
+			</div>
+		</div>
+		<script>
+			console.log("-----");
+
+			fetch("cgi-bin/count.dat")
+				.then(response => response.json())
+				.then( data => inport(data));
+
+			function inport(data){
+				$("counter").innerHTML = data;
+			}
+
+
+
+			function $(tagId){
+				return document.getElementById(tagId);
+			}
+		</script>
+	</body>
+</html>
