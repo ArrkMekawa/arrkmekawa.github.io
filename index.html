@@ -16,7 +16,7 @@
 			p{
 				padding-left: 10px;
 			}
-			img{
+			img#backimg{
 				width: 100%;
 				height: 550px;
 				padding-top: 200px;
@@ -40,6 +40,7 @@
 				color: white;
 				font-size: larger;
 				text-align: center;
+				letter-spacing: 0.5em;
 				overflow: hidden;
 				transition: all 1s cubic-bezier(0, 0, 0, 1);
 			}
@@ -53,10 +54,14 @@
 			label h3{
 				box-sizing: border-box;
 				/* background-color: #b8faec; */
-				border: 1px solid #0008;
-				border-radius: 6px;
+				border: 1px solid transparent;
+				border-bottom: 1px solid #0008;
 				padding: 2px;
 				transition: 1s ease;
+			}
+			label:hover h3{
+				color: navy;
+				background-color: #164c6822;
 			}
 			.contents{
 				overflow-y: scroll;
@@ -77,22 +82,28 @@
 			}
 			#msg label:nth-of-type(2){
 				width: 0px;
+				letter-spacing: -1em;
 			}
 			input#showall:checked ~ #msg label:nth-of-type(1){
 				width: 0px;
+				letter-spacing: -1em;
 			}
 			input#showall:checked ~ #msg label:nth-of-type(2){
 				width: calc(100% - 2px);
+				letter-spacing: 0.5em;
+			}
+			#msg label:hover{
+				color: yellow;
 			}
 			input#showall:checked ~ div .contents{
 				height: auto;
 				margin-bottom: 10px;
 			}
 			#maincontent input:checked ~ label h3{
-				/* color: white; */
-				/* background-color: #39635a; */
-				border: 3px solid #0008;
-				padding: 0px;
+				color: white;
+				background-color: #39635a;
+				border-bottom: 3px solid #0008;
+				padding-bottom: 0px;
 			}
 			#maincontent input:checked ~ .contents{
 				height: 500px;
@@ -110,7 +121,7 @@
 					width: 100%;
 					height: unset;
 				}
-				#msg img{
+				img#backimg{
 					height: 150px;
 					padding-top: 0px;
 					padding-left: 30%;
@@ -152,7 +163,7 @@
 					　そう大したものはないけど<br>
 					　　ゆっくりしていきな。<br>
 				</div>
-				<img src="https://media.discordapp.net/attachments/711837856959561772/1036181929042640946/2022-10-30_16.31.43A.jpg" alt="なんかのイラスト">
+				<img src="https://media.discordapp.net/attachments/711837856959561772/1036181929042640946/2022-10-30_16.31.43A.jpg" alt="なんかのイラスト" id="backimg">
 				<label for="showall" class="showall" style="background-color: #121241;">すべて表示する</label><label for="showall" class="showall" style="background-color: #124134;">表示を戻す</label>
 				<p style="text-align: center; display: block;" id="footer">
 					<br>
@@ -191,15 +202,17 @@
 					<label for="ct3"><h3>Contents -成果物とか-</h3></label>
 					<div class="contents">
 						<div style="padding-left: 10px;">
-							<a href=""><h3>葉谷市</h3></a>
+							<a href="https://arrkyr.web.fc2.com/mc/top.html"><h3>葉谷市</h3></a>
 							<p>
 								開発してる都市の市のページをデザインだけ模したもの。<br>
-								あまりにもディープな設定があるかもしれない。
+								あまりにもディープな設定があるかもしれない。<br>
+								※移行前のページに飛びます
 							</p>
-							<a href=""><h3>芽河製作所</h3></a>
+							<a href="https://arrkmekawa.github.io/mekawa/calcdist.html"><h3>芽河製作所</h3></a>
 							<p>
 								葉谷市内に本社を構える、ジャンル問わず主にモノ作りを行う企業。<br>
-								制作したツールやらリソパやらの紹介・配布もここ。
+								制作したツールやらリソパやらの紹介・配布もここ。<br>
+								※現在は道のり計算ツールに直接飛びます
 							</p>
 						</div>
 					</div>
@@ -209,16 +222,16 @@
 					<label for="ct4"><h3>External -外部リンク-</h3></label>
 					<div class="contents">
 						<p>
-							<a href="">Twitter</a><br>
+							<a href="https://twitter.com/Arrk_YR" target="_blank">Twitter</a><br>
 							　@Arrk_YR/こちらメインアカウントです。建築の投稿とかは基本ココ。<br>
-							<a href="">神奈急車輌</a><br>
-							　相方かなきゅ～のサイト。アドオンとかRTMパックとかがあるよ。<br>
-							<a href="">NCC新都市連合</a><br>
+							<!-- <a href="">神奈急車輌</a><br>
+							　相方かなきゅ～のサイト。アドオンとかRTMパックとかがあるよ。<br> -->
+							<a href="https://ncc.mcjp.org" target="_blank">NCC新都市連合</a><br>
 							　数多くのマイクラ都市開発勢が集う場所。是非ご覧ください。<br>
-							<a href="">新矢県</a>(開発準備中)<br>
+							<!-- <a href="">新矢県</a>(開発準備中)<br>
 							　Minecraft現代建築勢による新たな矢を放つ。<br>
 							<a href="">真意倉高校物語</a><br>
-							　神絵師CKによる、現代建築勢のドタバタ学園劇。<br>
+							　神絵師CKによる、現代建築勢のドタバタ学園劇。<br> -->
 						</p>
 					</div>
 				</section>
@@ -227,16 +240,14 @@
 		<script>
 			console.log("-----");
 
-			fetch("cgi-bin/count.dat")
-				.then(response => response.json())
-				.then( data => inport(data));
-
-			function inport(data){
-				$("counter").innerHTML = data;
+			let counterElem;
+			let posNum = 5;
+			counterElem = '<img src="cts/counter_s.php?pos=0" width="0" height="0">';
+			for(i = posNum; i>0; i--){
+				counterElem += '<img src="cts/counter_s.php?pos=' + i + '">';
 			}
 
-
-
+			$("counter").innerHTML = counterElem;
 			function $(tagId){
 				return document.getElementById(tagId);
 			}
