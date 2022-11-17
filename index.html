@@ -6,8 +6,12 @@
 		<link rel="icon" type="image/png" href="https://cdn.discordapp.com/attachments/736089887069175858/774540627748061184/8be645f9e8346335.png">
 		<link rel="stylesheet" href="ress_min.css">
 		<style>
+			body{
+				background-image: url(bg.png);
+				background-repeat: repeat;
+				background-size: 200px;
+			}
 			#allcontent{
-				background-color: #7fd3;
 				min-width: 400px;
 				max-width: 960px;
 				height: 720px;
@@ -22,13 +26,14 @@
 				padding-top: 200px;
 				padding-bottom: 100px;
 				object-fit: cover;
+				filter:drop-shadow(0 0 10px black);
 			}
 			#msg{
 				position: absolute;
 				width: 37%;
 				height: 680px;
 				max-width: calc(960px * 0.37);
-				background-color: #7fd3;
+				/* background-color: #7fd3; */
 			}
 			#msg label{
 				display: inline-block;
@@ -40,12 +45,13 @@
 				color: white;
 				font-size: larger;
 				text-align: center;
-				letter-spacing: 0.5em;
+				letter-spacing: 0.3em;
 				overflow: hidden;
 				transition: all 1s cubic-bezier(0, 0, 0, 1);
 			}
 			#saying{
 				padding-top: calc(200px - 4.5em);
+				text-shadow: 1px 1px 0px white, 1px -1px 0px white, -1px -1px 0px white, -1px 1px 0px white;
 			}
 			#maincontent{
 				width: 60%;
@@ -67,7 +73,7 @@
 				overflow-y: scroll;
 				height: 0px;
 				transition: 1s cubic-bezier(0, 0, 0, 1);
-				background: linear-gradient(#0000, #0852);
+				background: linear-gradient(#dfe8, #7fd8);
 				border-radius: 0px 15px;
 				/* スクロールバー非表示 ここから */
 				-ms-overflow-style: none;
@@ -99,6 +105,7 @@
 				height: auto;
 				margin-bottom: 10px;
 			}
+			input#showall:checked ~ div label h3,
 			#maincontent input:checked ~ label h3{
 				color: white;
 				background-color: #39635a;
@@ -107,6 +114,9 @@
 			}
 			#maincontent input:checked ~ .contents{
 				height: 500px;
+			}
+			#footer{
+				padding-bottom: 30px;
 			}
 
 			@media(max-width: 580px){
@@ -131,23 +141,10 @@
 				#maincontent input:checked ~ .contents{
 					height: auto;
 					/* background-color: #f001; */
-					padding-bottom: 2em;
-				}
-				input#showall:checked ~ div section:last-of-type{
-					padding-bottom: 7em;
+					padding-bottom: 1em;
 				}
 				#saying{
 					padding-top: 0px;
-				}
-				#footer{
-					position: absolute;
-					bottom: 30px;
-					width: calc(100% - 20px);
-					padding-left: 0;
-				}
-				input#showall:checked ~ * #footer{
-					background-color: white;
-					position: fixed;
 				}
 			}
 		</style>
@@ -155,21 +152,18 @@
 
 	<body>
 		<div id="allcontent">
-			<h2>あーるけの隠れ家</h2>
 			<input type="checkbox" id="showall">
 			<div id="msg">
-				<div style="position:absolute; font-size:small;" id="saying">
-					一<span id ="counter"></span>人目の来訪者だね。<br>
-					　そう大したものはないけど<br>
-					　　ゆっくりしていきな。<br>
+				<h2>あーるけの隠れ家</h2>
+				<div style="display:flex">
+					<img src="https://media.discordapp.net/attachments/1014078038838870076/1034710819029647410/339_20221026150439.png?width=728&height=410" alt="なんかのイラスト" id="backimg">
+					<div style="position:absolute; font-size:small" id="saying">
+						よくこんなところにやって来たね。<br>
+						　そう大したものはないけど<br>
+						　　ゆっくりしていきな。<br>
+					</div>
 				</div>
-				<img src="https://media.discordapp.net/attachments/711837856959561772/1036181929042640946/2022-10-30_16.31.43A.jpg" alt="なんかのイラスト" id="backimg">
 				<label for="showall" class="showall" style="background-color: #121241;">すべて表示する</label><label for="showall" class="showall" style="background-color: #124134;">表示を戻す</label>
-				<p style="text-align: center; display: block;" id="footer">
-					<br>
-					(c)2022 Arrk<br>
-					更新:2022/11/16
-				</p>
 			</div>
 			<div id="maincontent">
 				<section>
@@ -235,22 +229,10 @@
 						</p>
 					</div>
 				</section>
+				<p style="text-align: center; display: block;" id="footer">
+					(c)2022 Arrk | 更新:2022/11/16
+				</p>
 			</div>
 		</div>
-		<script>
-			console.log("-----");
-
-			let counterElem;
-			let posNum = 5;
-			counterElem = '<img src="cts/counter_s.php?pos=0" width="0" height="0">';
-			for(i = posNum; i>0; i--){
-				counterElem += '<img src="cts/counter_s.php?pos=' + i + '">';
-			}
-
-			$("counter").innerHTML = counterElem;
-			function $(tagId){
-				return document.getElementById(tagId);
-			}
-		</script>
 	</body>
 </html>
