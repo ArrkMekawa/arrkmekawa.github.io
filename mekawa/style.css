@@ -1,102 +1,194 @@
-body{
-  background-color: #fff;
+@import url("https://fonts.googleapis.com/css2?family=M+PLUS+1p:wght@300;500&display=swap");
+
+*{
+	transition: all 0.3s ease-in-out;
 }
 
-img{
-  max-width: 100%;
+.body{
+	background-image: url(assets/bg.png);
+	background-size: 100px;
+	background-repeat: repeat;
+	min-height: 100vh;
 }
 
-#menu{
-  margin-left: 5px;
-}
-#menu .a_bg{
-  background: linear-gradient(120deg, #6bf5c8, #0099ff);
-  position: relative;
-  float: left;
-  height: calc(1em + 14px);
-  margin: 0px 5px;
-  margin-bottom: 5px;
-  padding: 3px;
-  transition: all .3s;
-  border-radius: 5px;
+.bodyContent{
+	min-width: 480px;
+	max-width: 960px;
+	margin: 0px auto;
+	padding-top: 5px;
+	color: #fff;
+	font-family: 'm+ 1p','ms gothic';
 }
 
-#menu a,
-.morebtn,
-.hidebtn{
-  height: 1em;
-  margin: 5px 0;
-  padding: 3px;
-  transition: all .3s ease;
-  color: navy;
-  text-decoration: none;
-  font-weight: bolder;
-  border: solid 0 #000;
-  border-radius: 5px;
+hr{
+	border: none;
+	margin: 0.3em 0;
+	height: 2px;
+	background: linear-gradient(to right, transparent, #6bf5c8 10%, transparent);
 }
 
-#menu a:hover,
-.morebtn:hover,
-.hidebtn{
-  background: #0008;
-  color: white;
-  border: solid 3px #0008;
-  padding: 0;
-  width: 100%;
-}
-.dtl input:checked ~ .a_bg{
-  display: none;
-}
-.hidden{
-  display: none;
-}
-.hidden .a_bg{
-  float: left;
-  margin-top: 0;
-  margin-bottom: 3px;
-  padding: 0;
-}
-.dtl input:checked ~ .hidden{
-  display: inline;
-}
-.hidebtn{
-  padding: 0px;
+/*トップ*/
+
+.topImg{
+	filter: drop-shadow(0px 0px 5px #0f09);
 }
 
-#main{
-  background-color: #c0ffc6;
-  padding-bottom: 5em;
-  margin: 5px;
-  margin-bottom: 100px;
+.top_head{
+	background-image: url(assets/2022-11-24_23.39.50.png);
+	background-size: cover;
+	background-position: center;
+	margin: 5px;
+	height: 250px;
+	/* color: white; */
 }
 
-@media(min-width:700px){
-  body{
-    width: 700px;
-  }
-  #menu{
-    display: block;
-    float: left;
-    width: 130px;
-    margin: 0;
-  }
-  #menu .a_bg{
-    width: 115px;
-    height: auto;
-    padding: 0;
-    text-align: center;
-    margin: 5px;
-    margin-top: 0;
-   }
-  #menu a,
-  .morebtn,
-  .hidebtn{
-    width: 100%;
-    display: block;
-    margin: 0;
- }
-  #main{
-    margin-left: 130px;
-  }
+.top_head p, 
+p span,
+a span{
+	display: inline-block;
+}
+
+/*切り替えボタン*/
+
+.switchArea{
+	position: relative;
+	width: calc(9em + 4px);
+	height: 1.5em;
+	vertical-align: middle;
+	overflow: hidden;
+}
+
+.switchArea span{
+	width: max-content;
+}
+
+.switchArea label{
+	display: block;
+	box-sizing: border-box;
+	height: 1.5em;
+	border: 1px solid;
+	border-radius: 1em;
+}
+
+.switchArea label:hover{
+	background-color: #3ca;
+}
+
+.theme{
+	padding: 0 1em;
+	border-radius: 1em;
+}
+
+/*本文コンテンツ*/
+
+.contents{
+	display: flex;
+}
+
+.contents a{
+	max-width: 40%;
+}
+
+/*本文リンク*/
+
+.main a{
+	display: inline-block;
+	vertical-align:top;
+	color: #6bf5c8;
+	background-color: #00056d;
+	text-decoration: none;
+	transition: 0.3s;
+	box-shadow: -3px -3px 5px #fff5, 3px 3px 5px #0005;
+}
+
+.main a:hover{
+	background-color: #00022b;
+	box-shadow: 0px 0px 0px #fff5, 0px 0px 0px #0005, inset 3px 3px 5px #0005, inset -3px -3px 5px #fff5;
+	color: #3ca;
+}
+
+/* フッター */
+.footer{
+	background-color: #267642;
+	margin-top: 2em;
+	padding: 2em 0;
+	text-align: center;
+	color: white;
+}
+
+.footer a{
+	color: #6bf5c8;
+}
+
+/*インライン強調*/
+
+.emp{
+	padding: 0 1em;
+	border-radius: 6px;
+}
+
+.green{
+	background-color: #3c8;
+	color: black;
+}
+
+.yellow{
+	background-color: #de2;
+	color: black;
+}
+
+.blue{
+	background-color: #33c;
+	color: white;
+}
+
+.gray{
+	background-color: #888;
+	color: white;
+}
+
+/*ニューモーフィズム*/
+
+.neumorphism_front,
+.neumorphism_back{
+	background-color: #0003;
+	margin: 7px 5px;
+	padding: 10px;
+	border-radius: 10px;
+
+}
+
+.neumorphism_front{
+	box-shadow: -3px -3px 5px #fff3, 3px 3px 5px #0005;
+}
+
+.neumorphism_back{
+	box-shadow: inset 3px 3px 5px #0005, inset -3px -3px 5px #fff3;
+}
+
+/* ライトテーマ */
+
+#lightTheme:checked ~ .body{
+	background-image: url(assets/bg_light.png);
+}
+
+#lightTheme:checked ~ .body .topImg{
+	filter: drop-shadow(0px 0px 2px #000);
+}
+
+#lightTheme:checked ~ .body :is(p, .main){
+	color: #05272a;
+}
+
+#lightTheme:checked ~ .body .switchArea label{
+	background-color: white;
+}
+
+#lightTheme:checked ~ .body .switchArea label:hover{
+	background-color: #3ca;
+}
+
+#lightTheme:checked ~ .body .switchArea label *{
+	transform: translateX(calc(-8em + 2px));
 }
 
