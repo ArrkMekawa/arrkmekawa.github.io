@@ -8,6 +8,7 @@
 	background-image: url(assets/bg.png);
 	background-size: 100px;
 	background-repeat: repeat;
+        min-width: 480px;
 	min-height: 100vh;
 }
 
