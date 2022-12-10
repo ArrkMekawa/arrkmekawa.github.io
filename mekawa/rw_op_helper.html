@@ -12,27 +12,29 @@
 	<link rel="stylesheet" href="ress_min.css">
 	<!-- <link rel="stylesheet" href="style.css"> -->
 	<meta name="format-detection" content="email=no,telephone=no,address=no">
-	<head prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# article: http://ogp.me/ns/website#"></head>
-	<meta property="og:url" content="https://arrkmekawa.github.io/mekawa/rwOpHelper" />
+	<meta prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# article: http://ogp.me/ns/website#" />
+	<meta property="og:url" content="https://arrkmekawa.github.io/mekawa/rw_op_helper.html" />
 	<meta property="og:type" content="article" />
 	<meta property="og:title" content="鉄道運行管理補助ツール" />
 	<meta property="og:description" content="鉄道運行データを読み込ませることで、ダイヤグラムやスタフを表示する事が出来るツールです。また、それを利用することで、架空鉄道を含めた鉄道運行の補助になる可能性があります。" />
-	<meta property="og:image" content="https://arrkmekawa.github.io/mekawa/assets/rwOpHelper/thumb.png" />
+	<meta property="og:image" content="https://arrkmekawa.github.io/mekawa/assets/rw_op_helper/thumb.png" />
 	<meta name="twitter:card" content="summary_large_image" />
 	<meta name="twitter:site" content="@Arrk_YR" />
 	<meta name="twitter:title" content="鉄道運行管理補助ツール | 芽河製作所">
-	<meta name="twitter:image" content="https://arrkmekawa.github.io/mekawa/assets/rwOpHelper/large_thumb.png">
+	<meta name="twitter:image" content="https://arrkmekawa.github.io/mekawa/assets/rw_op_helper/large_thumb.png">
 	<style>
 		@import url("https://fonts.googleapis.com/css2?family=M+PLUS+1p:wght@300;500&display=swap");
-
-		body{
-			font-family: 'm+ 1m';
+		*{
 			-ms-overflow-style: none;
 			scrollbar-width: none;
 		}
 
-		body *::-webkit-scrollbar {
+		*::-webkit-scrollbar {
 			display: none;
+		}
+
+		body{
+			font-family: 'm+ 1m';
 		}
 
 		div{
@@ -123,33 +125,33 @@
 		</div>
 
 		<div id="controlPanel" style="font-size: 3em;clear: both;height: 60px;width: max-content;">
-			<input type="button" style="background-image:url(assets/rwOpHelper/now.png)" onclick="setNow()">
+			<input type="button" style="background-image:url(assets/rw_op_helper/now.png)" onclick="setNow()">
 			<span class="separator"></span>
-			<input type="button" style="background-image:url(assets/rwOpHelper/track_start.png)" onclick="track()">
+			<input type="button" style="background-image:url(assets/rw_op_helper/track_start.png)" onclick="track()">
 			<span class="separator"></span>
-			<input type="button" style="background-image:url(assets/rwOpHelper/add_extra_train.png)">
+			<input type="button" style="background-image:url(assets/rw_op_helper/add_extra_train.png)">
 			<span class="separator"></span>
-			<input type="button" style="background-image:url(assets/rwOpHelper/undo.png)">
-			<input type="button" style="background-image:url(assets/rwOpHelper/redo.png)">
+			<input type="button" style="background-image:url(assets/rw_op_helper/undo.png)">
+			<input type="button" style="background-image:url(assets/rw_op_helper/redo.png)">
 			<span class="separator"></span>
-			<input type="button" style="background-image:url(assets/rwOpHelper/expand_horizonal.png)" onclick="expHorizonal()">
-			<input type="button" style="background-image:url(assets/rwOpHelper/compress_horizonal.png)" onclick="cmpHorizonal()">
-			<input type="button" style="background-image:url(assets/rwOpHelper/set_15.png)" onclick="set15()">
-			<input type="button" style="background-image:url(assets/rwOpHelper/set_30.png)" onclick="set30()">
-			<input type="button" style="background-image:url(assets/rwOpHelper/set_60.png)" onclick="set60()">
+			<input type="button" style="background-image:url(assets/rw_op_helper/expand_horizonal.png)" onclick="expHorizonal()">
+			<input type="button" style="background-image:url(assets/rw_op_helper/compress_horizonal.png)" onclick="cmpHorizonal()">
+			<input type="button" style="background-image:url(assets/rw_op_helper/set_15.png)" onclick="set15()">
+			<input type="button" style="background-image:url(assets/rw_op_helper/set_30.png)" onclick="set30()">
+			<input type="button" style="background-image:url(assets/rw_op_helper/set_60.png)" onclick="set60()">
 			<span class="separator"></span>
-			<input type="button" style="background-image:url(assets/rwOpHelper/expand_vertical.png)" onclick="expVertical()">
-			<input type="button" style="background-image:url(assets/rwOpHelper/compress_vertical.png)" onclick="cmpVertical()">
-			<input type="button" style="background-image:url(assets/rwOpHelper/adjust_vertical.png)" onclick="adjVertical()">
+			<input type="button" style="background-image:url(assets/rw_op_helper/expand_vertical.png)" onclick="expVertical()">
+			<input type="button" style="background-image:url(assets/rw_op_helper/compress_vertical.png)" onclick="cmpVertical()">
+			<input type="button" style="background-image:url(assets/rw_op_helper/adjust_vertical.png)" onclick="adjVertical()">
 			<span class="separator"></span>
-			<input type="button" style="background-image:url(assets/rwOpHelper/show_down.png)">
-			<input type="button" style="background-image:url(assets/rwOpHelper/show_up.png)">
-			<input type="button" style="background-image:url(assets/rwOpHelper/show_both.png)">
+			<input type="button" style="background-image:url(assets/rw_op_helper/show_down.png)">
+			<input type="button" style="background-image:url(assets/rw_op_helper/show_up.png)">
+			<input type="button" style="background-image:url(assets/rw_op_helper/show_both.png)">
 			<span class="separator"></span>
-			<input type="button" style="background-image:url(assets/rwOpHelper/set_offset.png)">
+			<input type="button" style="background-image:url(assets/rw_op_helper/set_offset.png)">
 			<span class="separator"></span>
-			<input type="button" style="background-image:url(assets/rwOpHelper/help.png)" onclick="showHelp()">
-			<input type="button" style="background-image:url(assets/rwOpHelper/setting.png)" onclick="showSetting()">
+			<input type="button" style="background-image:url(assets/rw_op_helper/help.png)" onclick="showHelp()">
+			<input type="button" style="background-image:url(assets/rw_op_helper/setting.png)" onclick="showSetting()">
 		</div>
 
 		<div style="display: flex;">
@@ -265,7 +267,6 @@
 			└(┐ﾞ’ωﾞ’ωﾞ`┘)┌モニャフーニャップスッポコホニャーオンンンィイ゛イ゛ェエ゛エ゛ァア゛ッッッッッポォオ゛ォオ゛
 		</div>
 	</div>
-	<script src="assets/rwOpHelper/script.js"></script>
+	<script src="assets/rw_op_helper/script.js"></script>
 </body>
-
 </html>
