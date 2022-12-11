@@ -35,9 +35,11 @@
 
 		body{
 			font-family: 'M+ type-2 (general-j) Regular', 'M+ M type-1 (basic latin) Regular', sans-serif;
+			background-color: #eee;
 		}
-		h1{
-			font-family: 'M+ type-2 (general-j) Bold', sans-serif;
+		h1, h2{
+			font-family: 'M+ type-2 (general-j) Bold', 'M+ C type-1 (basic latin) Bold', sans-serif;
+			font-weight: normal;
 		}
 
 		div{
@@ -45,26 +47,16 @@
 		}
 
 		#controlPanel input {
-			display: inline-block;
-			width: 1em;
-			height: 1em;
+			position: absolute;
+			background-color: #eee;
+			width: 48px;
+			height: 48px;
 			background-size: cover;
 			border-radius: 4px;
 		}
-		#controlPanel input ~ *{
-			margin-left: -0.3em;
-		}
 
 		#controlPanel input:hover{
-			background-color: #aaa;
-		}
-
-		.separator{
-			/* border-left: solid 6px transparent; */
-			display: inline-block;
-			height: 10px;
-			width: 6px;
-			vertical-align: middle;
+			background-color: #fff;
 		}
 
 		.scrollable{
@@ -106,19 +98,19 @@
 	<div id="read">
 		<h1>鉄道運行管理補助ツールを作りたい</h1>
 		<input type="file" name="filereader" id="btn_fileRead" draggable="true">
-		<p id="p_msg">2022/12/11 14:03</p>
+		<p id="p_msg">2022/12/11 14:54</p>
 	</div>
 	<div id="display" style="width: 960px;height: 540px;position: relative;">
 		<div style="display: inline-flex">
 			<div>
-				<h1 class="scrollable" id="copName" style="font-size: 3em;width: 288px;height: 1.5em;">会社名</h1>
+				<h1 class="scrollable" id="copName" style="font-size: 3em;width: 288px;height: 1.5em;">会社名CopName</h1>
 			</div>
 			<div style="max-width: 450px;">
 				<div class="scrollable">
-					<h2 id="travelSection" style="display: block;">路線名を表示するよぐへっぐへへえっえっへへへへ</h2>
+					<h2 id="travelSection" style="display: block;">0123LineName/路線名を表示するよぐへっぐへへえっえっへへへへ</h2>
 				</div>
 				<div class="scrollable">
-					<h2 id="description">運行曜日とか、イベント名とか <span>時間差運用対応</span></h2>
+					<h2 id="description">Descriptions/運行曜日とか、イベント名とか <span>時間差運用対応</span></h2>
 				</div>
 			</div>
 		</div>
@@ -127,41 +119,33 @@
 			<span style="font-size: 3em;" id="nowTime">00:00</span>
 		</div>
 
-		<div id="controlPanel" style="font-size: 3em;clear: both;height: 60px;width: max-content;">
-			<input type="button" style="background-image:url(assets/rw_op_helper/now.png)" onclick="setNow()">
-			<span class="separator"></span>
-			<input type="button" style="background-image:url(assets/rw_op_helper/track_start.png)" onclick="track()">
-			<span class="separator"></span>
-			<input type="button" style="background-image:url(assets/rw_op_helper/add_extra_train.png)">
-			<span class="separator"></span>
-			<input type="button" style="background-image:url(assets/rw_op_helper/undo.png)">
-			<input type="button" style="background-image:url(assets/rw_op_helper/redo.png)">
-			<span class="separator"></span>
-			<input type="button" style="background-image:url(assets/rw_op_helper/expand_horizonal.png)" onclick="expHorizonal()">
-			<input type="button" style="background-image:url(assets/rw_op_helper/compress_horizonal.png)" onclick="cmpHorizonal()">
-			<input type="button" style="background-image:url(assets/rw_op_helper/set_15.png)" onclick="set15()">
-			<input type="button" style="background-image:url(assets/rw_op_helper/set_30.png)" onclick="set30()">
-			<input type="button" style="background-image:url(assets/rw_op_helper/set_60.png)" onclick="set60()">
-			<span class="separator"></span>
-			<input type="button" style="background-image:url(assets/rw_op_helper/expand_vertical.png)" onclick="expVertical()">
-			<input type="button" style="background-image:url(assets/rw_op_helper/compress_vertical.png)" onclick="cmpVertical()">
-			<input type="button" style="background-image:url(assets/rw_op_helper/adjust_vertical.png)" onclick="adjVertical()">
-			<span class="separator"></span>
-			<input type="button" style="background-image:url(assets/rw_op_helper/show_down.png)">
-			<input type="button" style="background-image:url(assets/rw_op_helper/show_up.png)">
-			<input type="button" style="background-image:url(assets/rw_op_helper/show_both.png)">
-			<span class="separator"></span>
-			<input type="button" style="background-image:url(assets/rw_op_helper/set_offset.png)">
-			<span class="separator"></span>
-			<input type="button" style="background-image:url(assets/rw_op_helper/help.png)" onclick="showHelp()">
-			<input type="button" style="background-image:url(assets/rw_op_helper/setting.png)" onclick="showSetting()">
+		<div id="controlPanel" style="font-size: 3em;clear: both;height: 50px;width: max-content;position: relative;">
+			<input type="button" style="background-image:url(assets/rw_op_helper/now.png); left: 0;" onclick="setNow()">
+			<input type="button" style="background-image:url(assets/rw_op_helper/track_start.png); left: calc(1 * 48px + 1 * 5px);" onclick="track()">
+			<input type="button" style="background-image:url(assets/rw_op_helper/add_extra_train.png);left: calc(2 * 48px + 2 * 5px);">
+			<input type="button" style="background-image:url(assets/rw_op_helper/undo.png);left: calc(3 * 48px + 3 * 5px);">
+			<input type="button" style="background-image:url(assets/rw_op_helper/redo.png);left: calc(4 * 48px + 3 * 5px);">
+			<input type="button" style="background-image:url(assets/rw_op_helper/expand_horizonal.png);left: calc(5 * 48px + 4 * 5px);" onclick="expHorizonal()">
+			<input type="button" style="background-image:url(assets/rw_op_helper/compress_horizonal.png);left: calc(6 * 48px + 4 * 5px);" onclick="cmpHorizonal()">
+			<input type="button" style="background-image:url(assets/rw_op_helper/set_15.png);left: calc(7 * 48px + 4 * 5px);" onclick="set15()">
+			<input type="button" style="background-image:url(assets/rw_op_helper/set_30.png);left: calc(8 * 48px + 4 * 5px);" onclick="set30()">
+			<input type="button" style="background-image:url(assets/rw_op_helper/set_60.png);left: calc(9 * 48px + 4 * 5px);" onclick="set60()">
+			<input type="button" style="background-image:url(assets/rw_op_helper/expand_vertical.png);left: calc(10 * 48px + 5 * 5px);" onclick="expVertical()">
+			<input type="button" style="background-image:url(assets/rw_op_helper/compress_vertical.png);left: calc(11 * 48px + 5 * 5px);" onclick="cmpVertical()">
+			<input type="button" style="background-image:url(assets/rw_op_helper/adjust_vertical.png);left: calc(12 * 48px + 5 * 5px);" onclick="adjVertical()">
+			<input type="button" style="background-image:url(assets/rw_op_helper/show_down.png);left: calc(13 * 48px + 6 * 5px);">
+			<input type="button" style="background-image:url(assets/rw_op_helper/show_up.png);left: calc(14 * 48px + 6 * 5px);">
+			<input type="button" style="background-image:url(assets/rw_op_helper/show_both.png);left: calc(15 * 48px + 6 * 5px);">
+			<input type="button" style="background-image:url(assets/rw_op_helper/set_offset.png);left: calc(16 * 48px + 7 * 5px);">
+			<input type="button" style="background-image:url(assets/rw_op_helper/help.png);left: calc(17 * 48px + 8 * 5px);" onclick="showHelp()">
+			<input type="button" style="background-image:url(assets/rw_op_helper/setting.png);left: calc(18 * 48px + 9 * 5px);" onclick="showSetting()">
 		</div>
 
 		<div style="display: flex;">
 			<div id="div_canvas">
 				<canvas id="canvas" style="background-color: #0001;"></canvas>
 			</div>
-			<div style="width: 240px;height: 350px;overflow-y: scroll;">
+			<div style="width: 240px;height: 360px;overflow-y: scroll;">
 				<section id="routeIndex">
 					<h3>行路一覧</h3>
 					<div onclick="showRouteDetail('1447A')" id="1447A">
@@ -174,7 +158,7 @@
 						<h4>02: 1428A</h4>
 						<span>上り/快速/東京行き</span><br>
 						<span>走行区間：三鷹→吉祥寺</span><br>
-						<span>担当：国嬢辺</span>
+						<span>担当：芽河</span>
 					</div>
 				</section>
 				<section id="routeDetail">
@@ -249,7 +233,7 @@
 					<input type="button" value="<< 戻る" onclick="showRouteIndex()">
 					<h3>操作方法</h3>
 					<ul>
-						<li>ドラッグ/WASD：上下左右移動</li>
+						<li>ドラッグ・WASD：上下左右移動</li>
 						<li>スクロール操作：左右移動</li>
 						<li>Ctrl +スクロール：左右縮尺</li>
 						<li>Shift+スクロール：上下縮尺</li>
