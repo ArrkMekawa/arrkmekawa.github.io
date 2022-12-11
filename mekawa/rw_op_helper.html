@@ -22,8 +22,8 @@
 	<meta name="twitter:site" content="@Arrk_YR" />
 	<meta name="twitter:title" content="鉄道運行管理補助ツール | 芽河製作所">
 	<meta name="twitter:image" content="https://arrkmekawa.github.io/mekawa/assets/rw_op_helper/large_thumb.png">
-	<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=M+PLUS+1p:wght@300;500&display=swap">
-	<style>
+	<link rel="stylesheet" type="text/css" href="http://mplus-fonts.sourceforge.jp/webfonts/basic_latin/mplus_webfonts.css">
+<link rel="stylesheet" type="text/css" href="http://mplus-fonts.sourceforge.jp/webfonts/general-j/mplus_webfonts.css"><style>
 		*{
 			-ms-overflow-style: none;
 			scrollbar-width: none;
@@ -34,7 +34,10 @@
 		}
 
 		body{
-			font-family: 'm+ 1m';
+			font-family: 'M+ type-2 (general-j) Regular', 'M+ M type-1 (basic latin) Regular', sans-serif;
+		}
+		h1{
+			font-family: 'M+ type-2 (general-j) Bold', sans-serif;
 		}
 
 		div{
@@ -49,7 +52,7 @@
 			border-radius: 4px;
 		}
 		#controlPanel input ~ *{
-			margin-left: -0.5em;
+			margin-left: -0.3em;
 		}
 
 		#controlPanel input:hover{
@@ -103,7 +106,7 @@
 	<div id="read">
 		<h1>鉄道運行管理補助ツールを作りたい</h1>
 		<input type="file" name="filereader" id="btn_fileRead" draggable="true">
-		<p id="p_msg">2022/12/11 13:02</p>
+		<p id="p_msg">2022/12/11 14:03</p>
 	</div>
 	<div id="display" style="width: 960px;height: 540px;position: relative;">
 		<div style="display: inline-flex">
@@ -119,7 +122,7 @@
 				</div>
 			</div>
 		</div>
-		<div style="display: inline-block;position: absolute;right: 0;top: 0;text-align: end;background-color: #000;color: #3c3;padding: 0 1em;">
+		<div style="font-weight: bold;display: inline-block;position: absolute;right: 0;top: 0;text-align: end;background-color: #000;color: #3c3;padding: 0 1em;">
 			<span style="font-size: 2em;" id="nowHour">00</span>時
 			<span style="font-size: 3em;" id="nowTime">00:00</span>
 		</div>
