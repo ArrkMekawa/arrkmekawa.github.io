@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>架鉄運行管理補助ツール | 芽河製作所</title>
+	<meta name="author" content="Arrk_YR">
+	<meta charset="UTF-8">
+	<meta name="description" content="鉄道運行データを読み込ませることで、ダイヤグラムやスタフを表示する事が出来るツールです。また、それを利用することで、架空鉄道を含めた鉄道運行の補助になる可能性があります。その他、テスト走行用に時間をずらす機能、ダイヤグラムの編集や編集後のエクスポートも可能になる予定。">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="shortcut icon" href="assets/rw_op_helper/thumb.png" type="image/x-icon">
+	<link rel="stylesheet" href="ress_min.css">
+	<!-- <link rel="stylesheet" href="style.css"> -->
+	<meta name="format-detection" content="email=no,telephone=no,address=no">
+	<meta prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# article: http://ogp.me/ns/website#" />
+	<meta property="og:url" content="https://arrkmekawa.github.io/mekawa/rw_op_helper.html" />
+	<meta property="og:type" content="article" />
+	<meta property="og:title" content="鉄道運行管理補助ツール" />
+	<meta property="og:description" content="鉄道運行データを読み込ませることで、ダイヤグラムやスタフを表示する事が出来るツールです。また、それを利用することで、架空鉄道を含めた鉄道運行の補助になる可能性があります。" />
+	<meta property="og:image" content="https://arrkmekawa.github.io/mekawa/assets/rw_op_helper/thumb.png" />
+	<meta name="twitter:card" content="summary_large_image" />
+	<meta name="twitter:site" content="@Arrk_YR" />
+	<meta name="twitter:title" content="鉄道運行管理補助ツール | 芽河製作所">
+	<meta name="twitter:image" content="https://arrkmekawa.github.io/mekawa/assets/rw_op_helper/large_thumb.png">
+	<link rel="stylesheet" type="text/css" href="http://mplus-fonts.sourceforge.jp/webfonts/basic_latin/mplus_webfonts.css">
+<link rel="stylesheet" type="text/css" href="http://mplus-fonts.sourceforge.jp/webfonts/general-j/mplus_webfonts.css"><style>
+		*{
+			-ms-overflow-style: none;
+			scrollbar-width: none;
+		}
+
+		*::-webkit-scrollbar {
+			display: none;
+		}
+
+		body{
+			font-family: 'M+ type-2 (general-j) Regular', 'M+ M type-1 (basic latin) Regular', sans-serif;
+		}
+		h1{
+			font-family: 'M+ type-2 (general-j) Bold', sans-serif;
+		}
+
+		div{
+			background-color: #0ff1;
+		}
+
+		#controlPanel input {
+			display: inline-block;
+			width: 1em;
+			height: 1em;
+			background-size: cover;
+			border-radius: 4px;
+		}
+		#controlPanel input ~ *{
+			margin-left: -0.3em;
+		}
+
+		#controlPanel input:hover{
+			background-color: #aaa;
+		}
+
+		.separator{
+			/* border-left: solid 6px transparent; */
+			display: inline-block;
+			height: 10px;
+			width: 6px;
+			vertical-align: middle;
+		}
+
+		.scrollable{
+			overflow-x: auto;
+			white-space: nowrap;
+		}
+
+		#routeIndex div{
+			border-top: solid 2px #ccc;
+		}
+
+		#routeIndex div:hover{
+			background-color: #0001;
+		}
+
+		.timeTable{
+			border-collapse: collapse;
+			margin: auto;
+		}
+		.timeTable td{
+			min-width: 4em;
+			text-align: right;
+			border-top: solid 1px #888;
+		}
+		.timeTable td:nth-child(2){
+			background-color: #0001;
+		}
+		.timeTable input{
+			width: 4.5em;
+			margin: 0;
+			padding: 0;
+			border-radius: 0;
+			text-align: end;
+		}
+	</style>
+</head>
+
+<body>
+	<div id="read">
+		<h1>鉄道運行管理補助ツールを作りたい</h1>
+		<input type="file" name="filereader" id="btn_fileRead" draggable="true">
+		<p id="p_msg">2022/12/11 14:03</p>
+	</div>
+	<div id="display" style="width: 960px;height: 540px;position: relative;">
+		<div style="display: inline-flex">
+			<div>
+				<h1 class="scrollable" id="copName" style="font-size: 3em;width: 288px;height: 1.5em;">会社名</h1>
+			</div>
+			<div style="max-width: 450px;">
+				<div class="scrollable">
+					<h2 id="travelSection" style="display: block;">路線名を表示するよぐへっぐへへえっえっへへへへ</h2>
+				</div>
+				<div class="scrollable">
+					<h2 id="description">運行曜日とか、イベント名とか <span>時間差運用対応</span></h2>
+				</div>
+			</div>
+		</div>
+		<div style="font-weight: bold;display: inline-block;position: absolute;right: 0;top: 0;text-align: end;background-color: #000;color: #3c3;padding: 0 1em;">
+			<span style="font-size: 2em;" id="nowHour">00</span>時
+			<span style="font-size: 3em;" id="nowTime">00:00</span>
+		</div>
+
+		<div id="controlPanel" style="font-size: 3em;clear: both;height: 60px;width: max-content;">
+			<input type="button" style="background-image:url(assets/rw_op_helper/now.png)" onclick="setNow()">
+			<span class="separator"></span>
+			<input type="button" style="background-image:url(assets/rw_op_helper/track_start.png)" onclick="track()">
+			<span class="separator"></span>
+			<input type="button" style="background-image:url(assets/rw_op_helper/add_extra_train.png)">
+			<span class="separator"></span>
+			<input type="button" style="background-image:url(assets/rw_op_helper/undo.png)">
+			<input type="button" style="background-image:url(assets/rw_op_helper/redo.png)">
+			<span class="separator"></span>
+			<input type="button" style="background-image:url(assets/rw_op_helper/expand_horizonal.png)" onclick="expHorizonal()">
+			<input type="button" style="background-image:url(assets/rw_op_helper/compress_horizonal.png)" onclick="cmpHorizonal()">
+			<input type="button" style="background-image:url(assets/rw_op_helper/set_15.png)" onclick="set15()">
+			<input type="button" style="background-image:url(assets/rw_op_helper/set_30.png)" onclick="set30()">
+			<input type="button" style="background-image:url(assets/rw_op_helper/set_60.png)" onclick="set60()">
+			<span class="separator"></span>
+			<input type="button" style="background-image:url(assets/rw_op_helper/expand_vertical.png)" onclick="expVertical()">
+			<input type="button" style="background-image:url(assets/rw_op_helper/compress_vertical.png)" onclick="cmpVertical()">
+			<input type="button" style="background-image:url(assets/rw_op_helper/adjust_vertical.png)" onclick="adjVertical()">
+			<span class="separator"></span>
+			<input type="button" style="background-image:url(assets/rw_op_helper/show_down.png)">
+			<input type="button" style="background-image:url(assets/rw_op_helper/show_up.png)">
+			<input type="button" style="background-image:url(assets/rw_op_helper/show_both.png)">
+			<span class="separator"></span>
+			<input type="button" style="background-image:url(assets/rw_op_helper/set_offset.png)">
+			<span class="separator"></span>
+			<input type="button" style="background-image:url(assets/rw_op_helper/help.png)" onclick="showHelp()">
+			<input type="button" style="background-image:url(assets/rw_op_helper/setting.png)" onclick="showSetting()">
+		</div>
+
+		<div style="display: flex;">
+			<div id="div_canvas">
+				<canvas id="canvas" style="background-color: #0001;"></canvas>
+			</div>
+			<div style="width: 240px;height: 350px;overflow-y: scroll;">
+				<section id="routeIndex">
+					<h3>行路一覧</h3>
+					<div onclick="showRouteDetail('1447A')" id="1447A">
+						<h4>01: 1447A</h4>
+						<span>下り/快速/南小谷行き</span><br>
+						<span>走行区間：大月→勝沼ぶどう郷</span><br>
+						<span>担当：国嬢辺</span>
+					</div>
+					<div onclick="showRouteDetail('1428A')" id="1428A">
+						<h4>02: 1428A</h4>
+						<span>上り/快速/東京行き</span><br>
+						<span>走行区間：三鷹→吉祥寺</span><br>
+						<span>担当：国嬢辺</span>
+					</div>
+				</section>
+				<section id="routeDetail">
+					<input type="button" value="<<戻る" onclick="showRouteIndex()">
+					<h3>行路詳細</h3>
+					<div style="text-align: center;">
+						<h4>01: 1447A</h4>
+						<span>下り/快速/南小谷行き</span><br>
+						<span>
+							<input type="button" value="◁前">
+							<input type="button" value="すべて表示">
+							<input type="button" value="次▷">	
+						</span>
+						<table class="timeTable">
+							<tr>
+								<td>東京</td>
+								<td></td>
+								<td><input type="text" name="" id="	" value="10 00 00"></td>
+							</tr>
+							<tr>
+								<td>市ヶ谷</td>
+								<td>06 00</td>
+								<td>06 45</td>
+							</tr>
+							<tr>
+								<td>新宿</td>
+								<td>09 30</td>
+								<td>10 05</td>
+							</tr>
+							<tr>
+								<td>越後押上ひすい海岸</td>
+								<td>13 34 00</td>
+								<td></td>
+							</tr>
+						</table>
+					</div>
+					<br>
+					<div style="text-align: center;">
+						<h4>02: 1428A</h4>
+						<span>下り/快速/南小谷行き</span><br>
+						<span>
+							<input type="button" value="◁前">
+							<input type="button" value="すべて表示">
+							<input type="button" value="次▷">	
+						</span>
+						<table class="timeTable">
+							<tr>
+								<td>東京</td>
+								<td></td>
+								<td><input type="text" name="" id="	" value="10 00 00"></td>
+							</tr>
+							<tr>
+								<td>市ヶ谷</td>
+								<td>06 00</td>
+								<td>06 45</td>
+							</tr>
+							<tr>
+								<td>新宿</td>
+								<td>09 30</td>
+								<td>10 05</td>
+							</tr>
+							<tr>
+								<td>越後押上ひすい海岸</td>
+								<td>09 30</td>
+								<td>10 05</td>
+							</tr>
+						</table>
+					</div>
+					<div></div>
+				</section>
+				<section id="help">
+					<input type="button" value="<< 戻る" onclick="showRouteIndex()">
+					<h3>操作方法</h3>
+					<ul>
+						<li>ドラッグ/WASD：上下左右移動</li>
+						<li>スクロール操作：左右移動</li>
+						<li>Ctrl +スクロール：左右縮尺</li>
+						<li>Shift+スクロール：上下縮尺</li>
+					</ul>
+					<p>※移動操作をすると自動追尾がオフになります</p>
+				</section>
+				<section id="setting">
+					<input type="button" value="<< 戻る" onclick="showRouteIndex()">
+					<h3>設定</h3>
+				</section>
+				<br>
+				Made by 芽河製作所 (2022-12)
+			</div>
+		</div>
+
+		<div style="font-size: 2em;">
+			ここにはインフォメーションとかを表示するよ<br>
+			└(┐ﾞ’ωﾞ’ωﾞ`┘)┌モニャフーニャップスッポコホニャーオンンンィイ゛イ゛ェエ゛エ゛ァア゛ッッッッッポォオ゛ォオ゛
+		</div>
+	</div>
+	<script src="assets/rw_op_helper/script.js"></script>
+</body>
+</html>
