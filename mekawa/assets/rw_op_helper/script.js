@@ -10,7 +10,7 @@ let isFileRoaded = false;
 
 // 1-B. 描画初期設定
 const elemCanvas = $("canvas");//element
-const cvSizeX = 720, cvSizeY = 350;//canvas_size
+const cvSizeX = 720, cvSizeY = 360;//canvas_size
 elemCanvas.setAttribute('width', cvSizeX + "px");
 elemCanvas.setAttribute('height', cvSizeY + "px");
 const transX = 100, transY = 30;//ダイヤグラムの基準点
