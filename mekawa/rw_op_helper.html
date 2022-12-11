@@ -8,7 +8,7 @@
 	<meta name="description" content="鉄道運行データを読み込ませることで、ダイヤグラムやスタフを表示する事が出来るツールです。また、それを利用することで、架空鉄道を含めた鉄道運行の補助になる可能性があります。その他、テスト走行用に時間をずらす機能、ダイヤグラムの編集や編集後のエクスポートも可能になる予定。">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<link rel="shortcut icon" href="assets/logo.png" type="image/x-icon">
+	<link rel="shortcut icon" href="assets/rw_op_helper/thumb.png" type="image/x-icon">
 	<link rel="stylesheet" href="ress_min.css">
 	<!-- <link rel="stylesheet" href="style.css"> -->
 	<meta name="format-detection" content="email=no,telephone=no,address=no">
@@ -22,8 +22,8 @@
 	<meta name="twitter:site" content="@Arrk_YR" />
 	<meta name="twitter:title" content="鉄道運行管理補助ツール | 芽河製作所">
 	<meta name="twitter:image" content="https://arrkmekawa.github.io/mekawa/assets/rw_op_helper/large_thumb.png">
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=M+PLUS+1p:wght@300;500&display=swap">
 	<style>
-		@import url("https://fonts.googleapis.com/css2?family=M+PLUS+1p:wght@300;500&display=swap");
 		*{
 			-ms-overflow-style: none;
 			scrollbar-width: none;
@@ -103,7 +103,7 @@
 	<div id="read">
 		<h1>鉄道運行管理補助ツールを作りたい</h1>
 		<input type="file" name="filereader" id="btn_fileRead" draggable="true">
-		<p id="p_msg">ファイルを読み込んでください...</p>
+		<p id="p_msg">2022/12/11 13:02</p>
 	</div>
 	<div id="display" style="width: 960px;height: 540px;position: relative;">
 		<div style="display: inline-flex">
@@ -159,7 +159,7 @@
 				<canvas id="canvas" style="background-color: #0001;"></canvas>
 			</div>
 			<div style="width: 240px;height: 350px;overflow-y: scroll;">
-				<span id="routeIndex">
+				<section id="routeIndex">
 					<h3>行路一覧</h3>
 					<div onclick="showRouteDetail('1447A')" id="1447A">
 						<h4>01: 1447A</h4>
@@ -173,8 +173,8 @@
 						<span>走行区間：三鷹→吉祥寺</span><br>
 						<span>担当：国嬢辺</span>
 					</div>
-				</span>
-				<span id="routeDetail">
+				</section>
+				<section id="routeDetail">
 					<input type="button" value="<<戻る" onclick="showRouteIndex()">
 					<h3>行路詳細</h3>
 					<div style="text-align: center;">
@@ -241,8 +241,8 @@
 						</table>
 					</div>
 					<div></div>
-				</span>
-				<span id="help">
+				</section>
+				<section id="help">
 					<input type="button" value="<< 戻る" onclick="showRouteIndex()">
 					<h3>操作方法</h3>
 					<ul>
@@ -252,11 +252,11 @@
 						<li>Shift+スクロール：上下縮尺</li>
 					</ul>
 					<p>※移動操作をすると自動追尾がオフになります</p>
-				</span>
-				<span id="setting">
+				</section>
+				<section id="setting">
 					<input type="button" value="<< 戻る" onclick="showRouteIndex()">
 					<h3>設定</h3>
-				</span>
+				</section>
 				<br>
 				Made by 芽河製作所 (2022-12)
 			</div>
