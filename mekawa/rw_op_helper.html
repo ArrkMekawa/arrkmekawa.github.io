@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="ja">
 
 <head>
 	<title>架鉄運行管理補助ツール | 芽河製作所</title>
@@ -9,6 +9,7 @@
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<link rel="shortcut icon" href="assets/rw_op_helper/thumb.png" type="image/x-icon">
+	<meta name="robots" content="noindex,nofollow">
 	<link rel="stylesheet" href="ress_min.css">
 	<!-- <link rel="stylesheet" href="style.css"> -->
 	<meta name="format-detection" content="email=no,telephone=no,address=no">
@@ -22,8 +23,7 @@
 	<meta name="twitter:site" content="@Arrk_YR" />
 	<meta name="twitter:title" content="鉄道運行管理補助ツール | 芽河製作所">
 	<meta name="twitter:image" content="https://arrkmekawa.github.io/mekawa/assets/rw_op_helper/large_thumb.png">
-	<link rel="stylesheet" type="text/css" href="http://mplus-fonts.sourceforge.jp/webfonts/basic_latin/mplus_webfonts.css">
-<link rel="stylesheet" type="text/css" href="http://mplus-fonts.sourceforge.jp/webfonts/general-j/mplus_webfonts.css"><style>
+	<style>
 		*{
 			-ms-overflow-style: none;
 			scrollbar-width: none;
@@ -33,13 +33,27 @@
 			display: none;
 		}
 
+		@font-face {
+			font-family: 'LineSeedJP';
+			src: local("LINE Seed JP_OTF"),
+			url(https://arrkmekawa.github.io/mekawa/assets/fonts/LineSeedJP_OTF_Rg.woff2) format("woff2"),
+			url(https://arrkmekawa.github.io/mekawa/assets/fonts/LineSeedJP_OTF_Rg.woff) format("woff"),
+			url(https://arrkmekawa.github.io/mekawa/assets/fonts/LineSeedJP_OTF_Rg.otf) format("opentype");
+		}
+
 		body{
-			font-family: 'M+ type-2 (general-j) Regular', 'M+ M type-1 (basic latin) Regular', sans-serif;
+			font-family: 'LineSeedJP', 'LINE Seed JP_OTF', 'M+ 2c',  sans-serif;
 			background-color: #eee;
+			margin-bottom: 10px;
 		}
 		h1, h2{
-			font-family: 'M+ type-2 (general-j) Bold', 'M+ C type-1 (basic latin) Bold', sans-serif;
-			font-weight: normal;
+			font-weight: 700;
+		}
+		hr{
+			border: transparent;
+			background: #888;
+			height: 1px;
+			margin: 0;
 		}
 
 		div{
@@ -63,7 +77,9 @@
 			overflow-x: auto;
 			white-space: nowrap;
 		}
-
+		.scrollableContent{
+			padding: 0 10px;
+		}
 		#routeIndex div{
 			border-top: solid 2px #ccc;
 		}
@@ -90,6 +106,36 @@
 			padding: 0;
 			border-radius: 0;
 			text-align: end;
+			text-decoration: underline;
+		}
+		#setting input.num{
+			width: 4em;
+			font-size: larger;
+			font-weight: bolder;
+			text-align: end;
+		}
+		#setting input.btn{
+			border: solid 1px black;
+			border-radius: 5px;
+			height: 2em;
+			padding: 0 5px;
+			margin-bottom: 5px;
+		}
+		#setting input.btn:hover{
+			background-color: #fff;
+		}
+		.infoBtn{
+			background: #eee;
+			padding: 5px 20px;
+			border: solid 3px #064;
+			border-radius: 10px;
+			font-size: 20px;
+		}
+		.infoBtn:hover{
+			background: #ccc;
+		}
+		.underDev{
+			opacity: 0.2;
 		}
 	</style>
 </head>
@@ -98,23 +144,25 @@
 	<div id="read">
 		<h1>鉄道運行管理補助ツールを作りたい</h1>
 		<input type="file" name="filereader" id="btn_fileRead" draggable="true">
-		<p id="p_msg">2022/12/11 1536</p>
+		<p id="p_msg">2022/12/17 2350</p>
 	</div>
 	<div id="display" style="width: 960px;height: 540px;position: relative;">
 		<div style="display: inline-flex; height: 75px;">
 			<div>
-				<h1 class="scrollable" id="copName" style="font-size: 3em;width: 288px;height: 75px;">会社名CopName</h1>
+				<h1 class="scrollable" id="copName" style="font-size: 3em;width: 288px;height: 75px;">
+					<span class="scrollableContent">会社名 / CopName</span> 
+				</h1>
 			</div>
-			<div style="max-width: 450px;">
+			<div style="max-width: 400px;">
 				<div class="scrollable">
-					<h2 id="travelSection" style="display: block;">0123LineName/路線名を表示するよぐへっぐへへえっえっへへへへ</h2>
+					<h2 id="travelSection" style="display: inline-block" class="scrollableContent">LineName / 路線名を表示するよ</h2>
 				</div>
 				<div class="scrollable">
-					<h2 id="description">Descriptions/運行曜日とか、イベント名とか <span>時間差運用対応</span></h2>
+					<h2 id="description" class="scrollableContent" style="display: inline-block;">Descriptions / 運行曜日とか、イベント名とか表示可能。 <span>時間差運用対応</span></h2>
 				</div>
 			</div>
 		</div>
-		<div style="font-weight: bold;display: inline-block;height: 70px;position: absolute;right: 0;top: 0;text-align: end;background-color: #000;color: #3c3;padding: 0 1em;">
+		<div style="font-weight: bold;display: inline-block;height: 75px;width: 272px;position: absolute;right: 0;top: 0;text-align: end;background-color: #000;color: #3c3;padding: 0 1em;">
 			<span style="font-size: 2em;" id="nowHour">00</span>時
 			<span style="font-size: 3em;" id="nowTime">00:00</span>
 		</div>
@@ -122,9 +170,9 @@
 		<div id="controlPanel" style="font-size: 3em;clear: both;height: 50px;width: max-content;position: relative;">
 			<input type="button" style="background-image:url(assets/rw_op_helper/now.png); left: 0;" onclick="setNow()">
 			<input type="button" style="background-image:url(assets/rw_op_helper/track_start.png); left: calc(1 * 48px + 1 * 5px);" onclick="track()">
-			<input type="button" style="background-image:url(assets/rw_op_helper/add_extra_train.png);left: calc(2 * 48px + 2 * 5px);">
-			<input type="button" style="background-image:url(assets/rw_op_helper/undo.png);left: calc(3 * 48px + 3 * 5px);">
-			<input type="button" style="background-image:url(assets/rw_op_helper/redo.png);left: calc(4 * 48px + 3 * 5px);">
+			<input type="button" style="background-image:url(assets/rw_op_helper/add_extra_train.png);left: calc(2 * 48px + 2 * 5px);" class="underDev">
+			<input type="button" style="background-image:url(assets/rw_op_helper/undo.png);left: calc(3 * 48px + 3 * 5px);" class="underDev">
+			<input type="button" style="background-image:url(assets/rw_op_helper/redo.png);left: calc(4 * 48px + 3 * 5px);" class="underDev">
 			<input type="button" style="background-image:url(assets/rw_op_helper/expand_horizonal.png);left: calc(5 * 48px + 4 * 5px);" onclick="expHorizonal()">
 			<input type="button" style="background-image:url(assets/rw_op_helper/compress_horizonal.png);left: calc(6 * 48px + 4 * 5px);" onclick="cmpHorizonal()">
 			<input type="button" style="background-image:url(assets/rw_op_helper/set_15.png);left: calc(7 * 48px + 4 * 5px);" onclick="set15()">
@@ -133,10 +181,10 @@
 			<input type="button" style="background-image:url(assets/rw_op_helper/expand_vertical.png);left: calc(10 * 48px + 5 * 5px);" onclick="expVertical()">
 			<input type="button" style="background-image:url(assets/rw_op_helper/compress_vertical.png);left: calc(11 * 48px + 5 * 5px);" onclick="cmpVertical()">
 			<input type="button" style="background-image:url(assets/rw_op_helper/adjust_vertical.png);left: calc(12 * 48px + 5 * 5px);" onclick="adjVertical()">
-			<input type="button" style="background-image:url(assets/rw_op_helper/show_down.png);left: calc(13 * 48px + 6 * 5px);">
-			<input type="button" style="background-image:url(assets/rw_op_helper/show_up.png);left: calc(14 * 48px + 6 * 5px);">
-			<input type="button" style="background-image:url(assets/rw_op_helper/show_both.png);left: calc(15 * 48px + 6 * 5px);">
-			<input type="button" style="background-image:url(assets/rw_op_helper/set_offset.png);left: calc(16 * 48px + 7 * 5px);">
+			<input type="button" style="background-image:url(assets/rw_op_helper/show_down.png);left: calc(13 * 48px + 6 * 5px);" class="underDev">
+			<input type="button" style="background-image:url(assets/rw_op_helper/show_up.png);left: calc(14 * 48px + 6 * 5px);" class="underDev">
+			<input type="button" style="background-image:url(assets/rw_op_helper/show_both.png);left: calc(15 * 48px + 6 * 5px);" class="underDev">
+			<input type="button" style="background-image:url(assets/rw_op_helper/locationDescriber.png);left: calc(16 * 48px + 7 * 5px);" onclick="switchTrainLocationView()">
 			<input type="button" style="background-image:url(assets/rw_op_helper/help.png);left: calc(17 * 48px + 8 * 5px);" onclick="showHelp()">
 			<input type="button" style="background-image:url(assets/rw_op_helper/setting.png);left: calc(18 * 48px + 9 * 5px);" onclick="showSetting()">
 		</div>
@@ -146,7 +194,7 @@
 				<canvas id="canvas" style="background-color: #0001;"></canvas>
 			</div>
 			<div style="width: 240px;height: 360px;overflow-y: scroll;">
-				<section id="routeIndex">
+				<section id="routeIndex"  class="underDev">
 					<h3>行路一覧</h3>
 					<div onclick="showRouteDetail('1447A')" id="1447A">
 						<h4>01: 1447A</h4>
@@ -161,7 +209,7 @@
 						<span>担当：芽河</span>
 					</div>
 				</section>
-				<section id="routeDetail">
+				<section id="routeDetail" class="underDev">
 					<input type="button" value="<<戻る" onclick="showRouteIndex()">
 					<h3>行路詳細</h3>
 					<div style="text-align: center;">
@@ -232,28 +280,85 @@
 				<section id="help">
 					<input type="button" value="<< 戻る" onclick="showRouteIndex()">
 					<h3>操作方法</h3>
-					<ul>
-						<li>ドラッグ・WASD：上下左右移動</li>
-						<li>スクロール操作：左右移動</li>
-						<li>Ctrl +スクロール：左右縮尺</li>
-						<li>Shift+スクロール：上下縮尺</li>
-					</ul>
-					<p>※移動操作をすると自動追尾がオフになります</p>
+					<hr>
+					<b>左右移動</b>
+					<p>ドラッグ / スクロール / A,D</p>
+					<hr>
+					<b>上下移動</b>
+					<p>ドラッグ / W,S</p>
+					<hr>
+					<b>左右拡大縮小</b>
+					<p>Ctrl+スクロール / Shift+ A, D</p>
+					<hr>
+					<b>上下拡大縮小</b>
+					<p>Shift+スクロール / Shift+ W, S</p>
+					<hr>
+					<p>※移動操作を行うと、自動追尾がオフになります</p>
+					<h3>ショートカット</h3>
+					<hr>
+					<p>␣(スペース)：自動追尾ON</p>
 				</section>
 				<section id="setting">
 					<input type="button" value="<< 戻る" onclick="showRouteIndex()">
+					<hr>
 					<h3>設定</h3>
+					<hr>
+					<section id="chOfsBtns" style="display: inline;">
+						<p>差分設定</p>
+						<p style="text-align: center">
+							<input class="num" type="text" name="timeOffset" id="timeOffset" value="0:00">だけずらす
+							
+						</p>
+						<p style="text-align: center; margin-bottom: 5px;">
+							<input class="btn" type="button" value="-1時間" onclick="changeOffsetbyInput(-3600)">
+							<input class="btn" type="button" value="-5分" onclick="changeOffsetbyInput(-300)">
+							<input class="btn" type="button" value="+5分" onclick="changeOffsetbyInput(300)">
+							<input class="btn" type="button" value="+1時間" onclick="changeOffsetbyInput(3600)"><br>
+							<input class="btn" type="button" value="リセット" onclick="resetOffset()">(BSキー)
+						</p>
+						<hr>
+					</section>
+					<section>
+						<p>表示する駅</p>
+						<p style="text-align: center; margin-bottom: 5px;">
+							<input class="btn" type="button" value="全駅を表示する" onclick="showMajorOnly(false)">
+							<input class="btn" type="button" value="主要駅のみ表示する" onclick="showMajorOnly(true)">
+						</p>
+						<hr>
+					</section>
+					<section class="underDev">
+						<p>ファイル</p>
+						<p style="text-align: center;">
+							<input type="button" value="エクスポートする" class="btn">
+							<input type="button" value="操作をすべて戻す" class="btn">
+						</p>
+					</section>
 				</section>
 				<br>
 				Made by 芽河製作所 (2022-12)
 			</div>
 		</div>
 
-		<div style="font-size: 2em;">
-			ここにはインフォメーションとかを表示するよ<br>
-			└(┐ﾞ’ωﾞ’ωﾞ`┘)┌モニャフーニャップスッポコホニャーオンンンィイ゛イ゛ェエ゛エ゛ァア゛ッッッッッポォオ゛ォオ゛
+		<div style="display: flex;font-size: 2em;">
+			<input type="button" value="Info: " style="background: #064;color: #fff;" onclick="infoEdit('open')">
+			<div class="scrollable">
+				<span class="scrollableContent" id="information">
+					⇦クリックして常に表示するインフォメーションを編集できます。長文の場合は自動でスクロールします。
+				</span>
+			</div>
 		</div>
 	</div>
+	<section id="infoEditor">
+		<div style="position: fixed;display: block; top: 80px; width: 100%;">
+			<div style="width: 500px; margin: auto; background-color: #fffc;border-radius: 20px;padding: 10px; text-align: center;font-size: larger;">
+				<h3>インフォメーションを設定します</h3>
+				<textarea name="infoContent" id="infoContent" cols="40" rows="10" style="border: solid 2px;border-radius: 10px;background: #fffd;min-height: 3em;" oninput="infoEdit('edit')"></textarea>
+				<br>
+				<input type="button" class="infoBtn" value="更新" onclick="infoEdit('confirm')">
+				<input type="button" class="infoBtn" value="閉じる" onclick="infoEdit('close')">
+			</div>
+		</div>
+	</section>
 	<script src="assets/rw_op_helper/script.js"></script>
 </body>
 </html>

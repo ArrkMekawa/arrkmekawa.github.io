@@ -1,5 +1,13 @@
 // 1. 最初に読まれる
 cons("------");
+//初期設定
+const cvSizeX = 720, cvSizeY = 360;//1-B:canvas_size
+let transX = 100, transY = 30;//1-C:ダイヤグラムの基準点
+const spaceOfSection = 500; // 2-B:セクション間の距離(m)
+let hourOffset = 0, minOffset = 0;//1-H:差分設定
+let isLocationShowing = true; // 4-H. 在線表示を出すか否か
+let isAutoScroll = true; // 5-B:自動スクロール
+let isShowMajorStnOnly = false; // 6-D4:主要駅のみ表示
 
 // 1-A. ファイルを読むボタン
 let btn_fileRead = $('btn_fileRead');
@@ -10,17 +18,35 @@ let isFileRoaded = false;
 
 // 1-B. 描画初期設定
 const elemCanvas = $("canvas");//element
-const cvSizeX = 720, cvSizeY = 360;//canvas_size
 elemCanvas.setAttribute('width', cvSizeX + "px");
 elemCanvas.setAttribute('height', cvSizeY + "px");
-const transX = 100, transY = 30;//ダイヤグラムの基準点
 
 // 1-C. canvasContext初期設定
 let ctx; 
+let isTranslated = false; // ctxが座標変換されたかどうか
+const img = new Image();
+img.src = "assets/logo_name.png";
+img.addEventListener('load', function(){
+	if(isTranslated) ctx.drawImage(img, -transX, 130, cvSizeX - 10, 100);
+	else ctx.drawImage(img, -transX, 130, cvSizeX - 10, 100);
+})
 if(elemCanvas.getContext){
 	ctx = elemCanvas.getContext('2d');
-	ctx.font = '18px sans-serif';
+	ctx.font = "48px 'm+ 2c medium'";
+	ctx.lineWidth = 2;
+	ctx.fillStyle = '#fff';
+	ctx.fillText("鉄道運行管理補助ツール ", 5, 50, cvSizeX - 5);
+	ctx.strokeText("鉄道運行管理補助ツール", 5, 50, cvSizeX - 5);
+	ctx.fillStyle = '#064';
+	ctx.font = "24px 'm+ 2c regular'";
+	ctx.fillText('このツールは、予め用意しておいたJSONファイルを読ませることで、', 15, 100, cvSizeX - 15);
+	ctx.fillText('ダイヤグラムや行路を表示・編集できるようになるツールです。', 15, 130, cvSizeX - 15);
+	let rightTextWidth = 200;
+	ctx.fillText('近日、JSONフォーマット公開予定 | Twitter:@Arrk_YR', rightTextWidth, 310, cvSizeX - rightTextWidth - 10);
 	ctx.translate(transX, transY);
+	isTranslated = true;
+	ctx.font = "18px 'M+ P type-1 (basic latin) Regular', 'M+ type-2 (general-j) Regular'";
+	ctx.fillStyle = "#333";
 }
 
 // 1-D. 縮尺
@@ -29,8 +55,8 @@ const scales = [0.01, 0.012, 0.015, 0.02, 0.024, 0.03, 0.04, 0.05, 0.06, 0.075, 
 // 1-E. 縮尺補正値,x:60分, y:10km
 const correctScaleX = 1100 / cvSizeX; 
 const correctScaleY = 11300 / cvSizeY;
-let sX = 29, sY = 20; // 縮尺初期値 sx=15:60分、sy=20:10km
-let deltaX = -32400, deltaY = 0; // スクロール量
+let sX = 15, sY = 20; // 縮尺初期値 sx=15:60分、sy=20:10km
+let deltaX = 0, deltaY = 0; // スクロール量
 
 // 1-F. canvas上のドラッグのリスナ
 elemCanvas.addEventListener('mousedown', handleMouseDowned, false);
@@ -40,11 +66,20 @@ elemCanvas.addEventListener('wheel', getScroll, false);
 elemCanvas.addEventListener('wheel', function(event){
 	event.preventDefault();
 }, {passive: false});
+document.addEventListener('keydown', getKey);
 
 // 1-G. ドラッグしたかクリックしたかを判別する
 let clicked = false;
 let moveCount = 0;
 let dragStartX, dragStartY; //ドラッグする最初の位置
+
+// 1-H. 差分設定をする
+let timeOffset;
+function setOffset(hourOffset, minOffset){
+	timeOffset = hourOffset * 3600 + minOffset * 60;
+	if(timeOffset != 0) $("description").innerText = jsonData.description + " +" + hourOffset + "時間" + minOffset + "分";
+	else $("description").innerText = jsonData.description;
+}
 
 // 2. JSONファイルを読み込む
 function fileRead() {
@@ -53,7 +88,12 @@ function fileRead() {
 	reader.onload = function (event) {
 		jsonData = JSON.parse(event.target.result);
 		cons(jsonData);
-		showJsonData();
+		showJsonData();    // 2-A. 路線名などを表示する
+		setDistIndex();    // 2-B. 駅の距離のインデックスを作成する
+		adjVertical();     // 5-M. 縦を全体に合わせる
+		makeStnNumIndex(); // 2-C. 駅番号をインデックス化する
+		makeOpData();      // 2-D. 在線表示用データを作成する
+		$("chOfsBtns").setAttribute("style", "display: inline;"); // 差分偏光ボタン表示
 	}
 	reader.readAsText(file);
 }
@@ -62,14 +102,104 @@ function fileRead() {
 function showJsonData() {
 	$("read").setAttribute('style', 'display:none');
 	isFileRoaded = true;
-	$("copName").innerText = jsonData.copName;
-	let travelSection_text = jsonData.lines[0].name;
-	cons(jsonData.lines.length);
-	for(i = 1; i < jsonData.lines.length; i++){
-		travelSection_text += '、' + jsonData.lines[i].name;
+	$("copName").innerHTML = '<span class="scrollableContent">' + jsonData.copName + '</span>';
+	let travelSection_text = jsonData.sections[0].name;
+	cons(jsonData.sections.length);
+	for(let i = 1; i < jsonData.sections.length; i++){
+		travelSection_text += '、' + jsonData.sections[i].name;
 	}
 	$('travelSection').innerText = travelSection_text;
-	$("description").innerText = jsonData.description;
+	setOffset(hourOffset, minOffset);
+}
+
+
+// 2-B. JSONファイルのデータ内にある距離をインデックス化する
+let distOfStnsIndex = [];
+function setDistIndex(){
+	let offset = 0;
+	for(let i = 0; i < jsonData.sections.length; i++){
+		distOfStnsIndex.push([]);
+		for(let j = 0; j < jsonData.sections[i].stations.length; j++){
+			let value = offset + jsonData.sections[i].stations[j].dist - jsonData.sections[i].stations[0].dist;
+			distOfStnsIndex[i].push(value);
+		}
+		offset += jsonData.sections[i].stations[jsonData.sections[i].stations.length - 1].dist + spaceOfSection;
+	}
+	cons("距離一覧↓");
+	cons(distOfStnsIndex);
+}
+
+// 2-C. JSONファイルのデータ内にある駅番号をインデックス化する
+let stnNumIndex = new Object();
+function makeStnNumIndex(){
+	for(let i = 0; i < jsonData.sections.length; i++){
+		let secIndex = new Object();
+		for(let j = 0; j < jsonData.sections[i].stations.length; j++){
+			secIndex[jsonData.sections[i].stations[j].name] = j;
+		}
+		stnNumIndex[jsonData.sections[i].name] = secIndex;
+		stnNumIndex[jsonData.sections[i].name].index = i;
+	}
+	cons("駅番号インデックス↓");
+	cons(stnNumIndex);
+}
+
+// 2-D. 在線表示のための運用データを作成する
+let operationData;
+function makeOpData(){
+	operationData = [];
+	for(let i = 0; i < jsonData.operations.length; i++){
+		let operation = new Object();
+		operation.opNum = jsonData.operations[i].opNum ?? "未設定";
+		operation.routeNum = jsonData.operations[i].routeNum ?? null;
+		operation.opPrev = jsonData.operations[i].opPrevNum ?? null;
+		operation.opNext = jsonData.operations[i].opNextNum ?? null;
+		operation.type = jsonData.operations[i].type ?? "普通";
+		operation.color = jsonData.operations[i].color ?? "#222";
+		operation.timeSchedule = [];
+		for(let j = 0; j < jsonData.operations[i].stops.length; j++){
+			if(jsonData.operations[i].stops[j].arrTime != null){
+				let tmp = new Object();
+				tmp.time = time2sec(jsonData.operations[i].stops[j].arrTime);
+				let secIndex = stnNumIndex[jsonData.operations[i].stops[j].lineName].index;
+				let stnIndex = stnNumIndex[jsonData.operations[i].stops[j].lineName][jsonData.operations[i].stops[j].stnName];
+				tmp.location = distOfStnsIndex[secIndex][stnIndex];
+				if(j > 0){
+					if(tmp.location - operation.timeSchedule[j-1].location > 0) tmp.direction = "d";
+					else if(tmp.location - operation.timeSchedule[j-1].location < 0) tmp.direction = "u";
+					else tmp.direction = operation.timeSchedule[j-1].direction;
+				}
+				operation.timeSchedule.push(tmp);
+			}
+			if(jsonData.operations[i].stops[j].depTime != null){
+				let tmp = new Object();
+				tmp.time = time2sec(jsonData.operations[i].stops[j].depTime);
+				let secIndex = stnNumIndex[jsonData.operations[i].stops[j].lineName].index;
+				let stnIndex = stnNumIndex[jsonData.operations[i].stops[j].lineName][jsonData.operations[i].stops[j].stnName];
+				tmp.location = distOfStnsIndex[secIndex][stnIndex];
+				if(j > 0){
+					if(tmp.location - operation.timeSchedule[j-1].location > 0) tmp.direction = "d";
+					else if(tmp.location - operation.timeSchedule[j-1].location < 0) tmp.direction = "u";
+					else tmp.direction = operation.timeSchedule[j-1].direction;
+				}
+				operation.timeSchedule.push(tmp);
+			}
+		}
+		let directionBuffer = "";
+		// cons(operation.timeSchedule.length)
+		for(let j = operation.timeSchedule.length - 1; j >= 0; j--){
+			if(operation.timeSchedule[j].direction != undefined){
+				directionBuffer = operation.timeSchedule[j].direction;
+				// cons("directionBuffer = " + directionBuffer)
+			}else{
+				operation.timeSchedule[j].direction = directionBuffer;
+				// cons("[" + i + "][" + j + "]書き換え完了：" + directionBuffer);
+			}
+		}
+		operationData.push(operation);
+	}
+	cons("在線用インデックス↓")
+	cons(operationData);
 }
 
 // 3. canvas内の操作
@@ -136,15 +266,51 @@ function getScroll(e){
 	}
 }
 
-// 3-E. 廃止
-// function findUnyou(){
-// 	draw();
-// 	ctx.lineWidth = 1;
-// 	ctx.strokeStyle = "black";
-// 	ctx.strokeRect(translateX(dragStartX) - 5, translateY(dragStartY) - 5, 10, 10);
-// }
+// 3-E. キーが押されたとき
+let isInfoEditerOpen = false;
+function getKey(e){
+	// cons(e.key);
+	if(isFileRoaded && !isInfoEditerOpen){
+		switch(e.key){
+			case "a":
+				deltaX += 15 / scales[sX] * correctScaleX;
+				isAutoScroll = false;
+				break;
+			case "d":
+				deltaX -= 15 / scales[sX] * correctScaleX;
+				isAutoScroll = false;
+				break;
+			case "w":
+				deltaY += 15 / scales[sY] * correctScaleY;
+				break;
+			case "s":
+				deltaY -= 15 / scales[sY] * correctScaleY;
+				break;
+			case "A":
+				cmpHorizonal();
+				break;
+			case "D":
+				expHorizonal();
+				break;
+			case "W":
+				cmpVertical();
+				break;
+			case "S":
+				expVertical();
+				break;
+			case " ":
+				track();
+				break;
+		}
+		draw();
+	}else{
+		if(e.key == "Escape"){
+			infoEdit('close');
+		}
+	}
+}
 
-// 4. 描画処理内容
+// 4. 描画処理＋スタフ一覧更新
 let gridXSpanA;//横軸親目盛間隔、時刻表記する
 let gridXSpanB;//横軸子目盛間隔
 function draw(){
@@ -185,15 +351,15 @@ function draw(){
 	}
 
 	// 4-B. 縦副罫線
-	ctx.strokeStyle = "#ccc";
-	for(i = 0; i < 108000; i += gridXSpanB){
+	ctx.strokeStyle = "#aaa";
+	for(let i = 0; i < 108000; i += gridXSpanB){
 		ctx.strokeRect(translateX(i), 0, 0, cvSizeY);
 	}
 
 	// 4-C. 縦主罫線
 	ctx.strokeStyle = "#888";
 	ctx.lineWidth = 0.8;
-	for(i = 0; i < 108000; i += gridXSpanA){
+	for(let i = 0; i < 108000; i += gridXSpanA){
 		let hour = Math.floor(i / 3600);
 		let min = (i - hour * 3600) / 60;
 		if(min < 10) min = "0" + min;
@@ -201,37 +367,55 @@ function draw(){
 		ctx.strokeRect(translateX(i), 0, 0, cvSizeY);
 	}
 
-	// 4-D. 運用 / ダイヤデータを読み込むコードを今度書く
+	// 4-D. 運用
 	ctx.strokeStyle = "#283";
-	ctx.lineWidth = 1.5;
-	let tmp = 16 * 3600 + 20 * 60;// 試験のための差分
-	ctx.beginPath();
-	ctx.moveTo(translateX(tmp + 0), translateY(0));
-	ctx.lineTo(translateX(tmp + 120),translateY(2000));
-	ctx.lineTo(translateX(tmp + 180),translateY(2000));
-	ctx.lineTo(translateX(tmp + 360),translateY(5000));
-	ctx.lineTo(translateX(tmp + 600),translateY(5000));
-	ctx.lineTo(translateX(tmp + 780),translateY(7500));
-	ctx.lineTo(translateX(tmp + 840),translateY(7500));
-	ctx.lineTo(translateX(tmp + 1200),translateY(10000));
-	ctx.lineTo(translateX(tmp + 1800),translateY(10000));
-	ctx.lineTo(translateX(tmp + 2400),translateY(5000));
-	ctx.lineTo(translateX(tmp + 2640),translateY(5000));
-	ctx.lineTo(translateX(tmp + 2640),translateY(2000));
-	ctx.lineTo(translateX(tmp + 2880),translateY(2000));
-	ctx.lineTo(translateX(tmp + 3300),translateY(0));
-	ctx.stroke();
+	ctx.lineWidth = 2.5;
 
-	ctx.strokeStyle = "#f00";
-	ctx.lineWidth = 3;
-	ctx.beginPath();
-	ctx.moveTo(translateX(tmp + 0), translateY(10000));
-	ctx.lineTo(translateX(tmp + 240), translateY(10000));
-	ctx.lineTo(translateX(tmp + 720), translateY(0));
-	ctx.lineTo(translateX(tmp + 840), translateY(0));
-	ctx.stroke();
+	let posX, posY;
+	let moved = false;
+	for(let i = 0; i < jsonData.operations.length; i++){
+		ctx.beginPath();
+		ctx.strokeStyle = jsonData.operations[i].color;
+		moved = false;
+		for(let j = 0; j < jsonData.operations[i].stops.length; j++){
+			//先に駅(y)を取得する
+			let secIndex = stnNumIndex[jsonData.operations[i].stops[j].lineName].index;
+			let stnIndex = stnNumIndex[jsonData.operations[i].stops[j].lineName][jsonData.operations[i].stops[j].stnName];
+			// cons("sec: " + secIndex + ", stn: " + stnIndex);
+			posY = distOfStnsIndex[secIndex][stnIndex]; 
 
+			if(jsonData.operations[i].stops[j].arrTime != null){
+				//時間
+				let arrTime = time2sec(jsonData.operations[i].stops[j].arrTime);
+				posX = arrTime + timeOffset;
 
+				// cons("secIndex: " + secId + ", stnIndex: " + stnIndex); 
+				if(moved == false || jsonData.operations[i].stops[j].hideLine == true){
+					ctx.stroke();
+					ctx.beginPath();
+					ctx.moveTo(translateX(posX), translateY(posY));
+					moved = true;
+				}else{	
+					ctx.lineTo(translateX(posX), translateY(posY));
+				}
+			}
+			if(jsonData.operations[i].stops[j].depTime != null){
+				//時間
+				let depTime = time2sec(jsonData.operations[i].stops[j].depTime);
+				posX = depTime + timeOffset;
+
+				if(moved == false || jsonData.operations[i].stops[j].hideLine == true){
+					ctx.stroke();
+					ctx.beginPath();
+					ctx.moveTo(translateX(posX), translateY(posY));
+					moved = true;
+				}else{
+					ctx.lineTo(translateX(posX), translateY(posY));
+				}
+			}
+		}
+		ctx.stroke();
+	}
 	
 	// 4-E. ダイヤ外枠
 	ctx.strokeStyle = "#888"
@@ -240,33 +424,116 @@ function draw(){
 
 	// 4-F. 現在時刻
 	let nowDate = new Date();
-	let hour = nowDate.getHours();
-	if(hour < 4) hour += 24;
+	let nowTime = nowDate.getHours() * 3600 + nowDate.getMinutes() * 60 + nowDate.getSeconds() + nowDate.getMilliseconds() / 1000;
+	if(nowTime < 14400) nowTime += 86400;
 	ctx.strokeStyle = "#f00";
-	ctx.strokeRect(translateX(hour * 3600 + nowDate.getMinutes() * 60 + nowDate.getSeconds() + nowDate.getMilliseconds() / 1000), 0, 0, cvSizeY);
+	ctx.strokeRect(translateX(nowTime), 0, 0, cvSizeY);
 
-	// 4-G. 駅名欄、横罫線
-	ctx.clearRect(-transX, -transY, transX, cvSizeY);
-	ctx.strokeStyle = "#aaa"
-	ctx.lineWidth = 0.3;
-	for(i = 0; i < jsonData.lines.length; i++){
-		for(j = 0; j < jsonData.lines[i].stations.length; j++){
-			ctx.strokeRect(-transX, translateY(jsonData.lines[i].stations[j].dist), cvSizeX, 0);
-			ctx.fillText(jsonData.lines[i].stations[j].name, -transX + 5, translateY(jsonData.lines[i].stations[j].dist));
+	// 4-G. 在線表示(ONの場合のみ)
+	if(isLocationShowing){
+		nowTime -= timeOffset;
+		ctx.clearRect(0, 0, 200, cvSizeY);
+		ctx.textBaseline = "middle";
+		ctx.strokeStyle = "#fff"
+		for(let i = 0; i <operationData.length; i++ ){
+			for(let j = 0; j < operationData[i].timeSchedule.length - 1; j++){
+				let fromTime = operationData[i].timeSchedule[j].time;
+				let toTime = operationData[i].timeSchedule[j + 1].time;
+				if(fromTime <= nowTime && nowTime <= toTime){
+					let fromPos = operationData[i].timeSchedule[j].location;
+					let toPos = operationData[i].timeSchedule[j + 1].location;
+					let progress = (nowTime - fromTime) / (toTime - fromTime);
+					let drawViewPosY = translateY(fromPos + (toPos - fromPos) * progress) ;
+					let direction = operationData[i].timeSchedule[j].direction;
+					if(fromPos < toPos || (fromPos == toPos && direction == "d")){ //下り線
+						ctx.beginPath();
+						ctx.fillStyle = operationData[i].color;
+						ctx.moveTo(115, drawViewPosY);
+						ctx.lineTo(125, drawViewPosY - 10);
+						ctx.lineTo(125, drawViewPosY);
+						ctx.lineTo(115, drawViewPosY + 10);
+						ctx.lineTo(105, drawViewPosY);
+						ctx.lineTo(105, drawViewPosY - 10);
+						ctx.closePath();
+						ctx.fill();
+						ctx.stroke();
+						ctx.textAlign = "start";
+						ctx.fillStyle = "#222";
+						ctx.fillText(operationData[i].opNum + "/" + operationData[i].type, 125, drawViewPosY, 75);
+						// cons(operationData[i].opNum + "/" + operationData[i].type + "," + j)
+					}else{
+						ctx.beginPath();
+						ctx.fillStyle = operationData[i].color;
+						ctx.moveTo(85, drawViewPosY);
+						ctx.lineTo(75, drawViewPosY + 10);
+						ctx.lineTo(75, drawViewPosY);
+						ctx.lineTo(85, drawViewPosY - 10);
+						ctx.lineTo(95, drawViewPosY);
+						ctx.lineTo(95, drawViewPosY + 10);
+						ctx.closePath();
+						ctx.fill();
+						ctx.stroke();
+						ctx.textAlign = "end";
+						ctx.fillStyle = "#222";
+						ctx.fillText(operationData[i].opNum + "/" + operationData[i].type, 75, drawViewPosY, 75);
+						// cons(operationData[i].opNum + "/" + operationData[i].type + "," + j)
+					}
+				}
+			}
 		}
+		ctx.strokeStyle = "#888";
+		// ctx.lineWidth
+		ctx.strokeRect(100, 0, 100, cvSizeY);
 	}
 
-	// 4-H. 時刻テキスト
+	// 4-H. 横罫線
+	ctx.clearRect(-transX, -transY, transX, cvSizeY);
+	ctx.strokeStyle = "#999"
+	ctx.lineWidth = 0.3;
+	let drawY;
+	setY = 0;
+	for(let i = 0; i < jsonData.sections.length; i++){
+		for(let j = 0; j < jsonData.sections[i].stations.length; j++){
+			if(j == 0 || j == jsonData.sections[i].stations.length - 1 || jsonData.sections[i].stations[j].isMajor){
+				ctx.strokeStyle = "#666";
+				ctx.lineWidth = 0.7;
+			}else{
+				if(isShowMajorStnOnly) continue;
+				ctx.strokeStyle = "#999";
+				ctx.lineWidth = 0.3;
+			}
+
+			 ctx.strokeRect(-transX, translateY(distOfStnsIndex[i][j]), cvSizeX, 0);
+		}
+	}
+	
+	// 4-I. 時刻テキスト
 	ctx.clearRect(0, -transY, cvSizeX, transY);
-	for(i = 0; i < 108000; i += gridXSpanA){
+	ctx.textAlign = "start";
+	ctx.textBaseline = "alphabetic";
+	for(let i = 0; i < 108000; i += gridXSpanA){
 		let hour = Math.floor(i / 3600);
 		let min = (i - hour * 3600) / 60;
 		if(min < 10) min = "0" + min;
 		ctx.fillText(hour + ':' + min, translateX(i), -5);
 	}
+
+	// 4-J. 駅名欄
+	ctx.clearRect(-transX, -transY, transX, cvSizeY);
+	ctx.strokeStyle = "#aaa"
+	ctx.lineWidth = 0.3;
+	ctx.textAlign = 'right';
+	for(let i = 0; i < jsonData.sections.length; i++){
+		for(let j = 0; j < jsonData.sections[i].stations.length; j++){
+			if(j != 0 && j != jsonData.sections[i].stations.length - 1 && !jsonData.sections[i].stations[j].isMajor && isShowMajorStnOnly) continue;
+			ctx.fillText(jsonData.sections[i].stations[j].name, 0, translateY(distOfStnsIndex[i][j]), 100);
+		}
+	}
+	ctx.textAlign = 'left';
+
 }
 
-// 4-I. 座標変換
+// 4-K. 座標変換
 function translateX(value){
 	value = (value + deltaX) * scales[sX] / correctScaleX;
 	return value;
@@ -274,6 +541,15 @@ function translateX(value){
 function translateY(value){
 	value = (value + deltaY) * scales[sY] / correctScaleY;
 	return value;
+}
+
+// 4-L. 時刻変換
+function time2sec(time){
+	let hour = Math.floor(time / 10000);
+	let min = Math.floor((time % 10000) / 100);
+	let sec = time % 100;
+	// cons(time + " >> " + hour + "," + min + "," + sec);
+	return hour * 3600 + min * 60 + sec;
 }
 
 // 5. ボタン設定
@@ -284,7 +560,6 @@ function setNow(){
 }
 
 // 5-B. auto / 自動スクロールする
-let isAutoScroll = true;
 function track(){
 	isAutoScroll = true;
 }
@@ -309,17 +584,20 @@ function cmpHorizonal(){
 
 // 5-H. set15
 function set15(){
-	sX = 20;
+	if(isLocationShowing) sX = 18;
+	else sX = 20;
 }
 
 // 5-I. set30
 function set30(){
-	sX = 17;
+	if(isLocationShowing) sX = 15;
+	else 	sX = 17;
 }
 
 // 5-J. set60
 function set60(){
-	sX = 14;
+	if(isLocationShowing) sX = 12;
+	else 	sX = 14;
 }
 
 // 5-K. expVertical / 縦を拡大する
@@ -335,6 +613,16 @@ function cmpVertical(){
 }
 
 // 5-M. adjVertical / 縦を全区間に合わせる
+function adjVertical(){
+	let last = distOfStnsIndex[distOfStnsIndex.length - 1][distOfStnsIndex[distOfStnsIndex.length - 1].length - 1];
+	deltaY = 0;
+	for(let i = 1; i < scales.length - 1; i++){
+		if(correctScaleY * scales[i + 1] * cvSizeY < last){
+			sY = i;
+		} 
+		else break;
+	}
+}
 
 // 5-N. showDown / 下り区間のみ表示
 
@@ -342,7 +630,12 @@ function cmpVertical(){
 
 // 5-P. showBoth / 両区間表示
 
-// 5-Q. setOffset / 時間差運用設定表示
+// 5-Q. showLocationDescriber / 在線表示切り替え(時間差運用設定表示から変更)
+function switchTrainLocationView(){
+	if(isLocationShowing) isLocationShowing = false;
+	else isLocationShowing = true;
+	cons("在線表示切替" + isLocationShowing)
+}
 
 // 5-R. about / 操作方法とか表示
 
@@ -369,7 +662,7 @@ function showRouteDetail(opNum){
 	elementHelp.setAttribute('style', 'display: none');
 	elementSetting.setAttribute('style', 'display: none');
 
-	if(opNum == "1428A") ;
+	if(opNum == "1428A") ;//書きかけ
 }
 
 // 6-C. #help / 操作方法表示
@@ -388,14 +681,126 @@ function showSetting(){
 	elementSetting.setAttribute('style', 'display: inline');
 }
 
-// 7. 常に実行する
+// 6-D1. #setting -> changeOffset / ボタンから変更
+function changeOffsetbyInput(value){
+	if(isFileRoaded){
+		timeOffset += +value;
+		commitOffset();
+	}
+}
+
+// 6-D2. #setting -> setOffsetbyInput / 入力欄から変更
+let elemTimeOffset = $("timeOffset");
+let keyBuffer = [0, 0, 0, 0];
+elemTimeOffset.addEventListener('keydown', function(e){
+	if(isFileRoaded){
+		switch(e.key){
+			case "ArrowUp":
+				timeOffset += 60;
+				break;
+			case "ArrowDown":
+				timeOffset -= 60;
+				break;
+			case "ArrowRight":
+				timeOffset += 3600;
+				break;
+			case "ArrowLeft":
+				timeOffset -= 3600;
+				break;
+			case "Backspace":
+				timeOffset = 0;
+				break;
+			case "-":
+				timeOffset *= -1;
+				break;
+			case "1":
+			case "2":
+			case "3":
+			case "4":
+			case "5":
+			case "6":
+			case "7":
+			case "8":
+			case "9":
+			case "0":
+				keyBuffer.push(+e.key);
+				keyBuffer.splice(0, 1);
+				// cons(keyBuffer);
+				timeOffset = keyBuffer[0] * 36000 + keyBuffer[1] * 3600 + keyBuffer[2] * 600 + keyBuffer[3] * 60;
+				break;
+			case "Enter":
+				showRouteIndex();
+			default:;
+		}
+		commitOffset();
+	}
+});
+
+// 6-D3. #setting -> resetOffset / 差分リセット
+function resetOffset(){
+	if(isFileRoaded){
+		timeOffset = 0;
+		commitOffset();
+	}
+}
+
+// 6-D4. #setting -> showMajor / 主要駅のみ表示
+function showMajorOnly(value){
+	isShowMajorStnOnly = value;
+}
+
+function commitOffset(){
+	let value = (timeOffset / 3600 + "").split('.');
+	value[1] = (timeOffset % 3600) / 60;
+	let displayMin = Math.abs(Math.round(value[1]));
+	if(displayMin < 10) displayMin = "0" + displayMin;
+	$('timeOffset').value = value[0] + ":" + displayMin;
+	$("description").innerText = jsonData.description + " / 差分：" + $('timeOffset').value;
+	if(timeOffset == 0) $("description").innerText = jsonData.description;
+}
+
+// 7. インフォメーションボード
+const elemInfoEditor = $('infoEditor');
+let info = "";
+elemInfoEditor.setAttribute('style', 'display:none');
+function infoEdit(value){
+	cons(value);
+	if(value == 'open'){
+		isInfoEditerOpen = true;
+		elemInfoEditor.setAttribute('style', 'display:block');
+	}else if(value == 'edit'){
+		info = $('infoContent').value.replace(/\r?\n/g, ' ');
+		// cons(info);
+	}else if(value == 'close'){
+		elemInfoEditor.setAttribute('style', 'display:none');
+		isInfoEditerOpen = false;
+	}else if(value == 'confirm'){
+		$('information').innerText = info.replace(/\r?\n/g, '　');
+		cons(info);
+		if(info == "") $('information').innerText = "⇦クリックして常に表示するインフォメーションを編集できます。長文の場合は自動でスクロールします。";
+	}
+}
+
+// 8. 常に実行する
 let nowHour = $("nowHour");
 let nowTime = $("nowTime");
 let nowDate = new Date();
-let time = [0, 0, 0];
+let time = [0, 0, 0]; // 8. 現在時刻(時・分・秒)
+let scrollable = document.getElementsByClassName('scrollable');
+let scrollableContent = document.getElementsByClassName('scrollableContent');
+// cons(scrollable);
+// cons(scrollableContent);
+const move = 2; //移動速度
+let moveAmount = [];
+let moveRange = [];
+for(let i = 0; i < scrollable.length; i++){
+	moveRange.push(scrollableContent[i].offsetWidth - scrollable[i].offsetWidth);
+	moveAmount.push(-500);
+}
+// cons(moveRange);
+// cons(move);
 window.addEventListener('DOMContentLoaded', function(){
-
-	// 7-A. 時刻表示
+	// 8-A. 時刻表示
 	setInterval(() =>{
 		nowDate = new Date();
 		time[0] = nowDate.getHours();
@@ -407,32 +812,53 @@ window.addEventListener('DOMContentLoaded', function(){
 		else if(time[2] % 10 == 0) nowTime.setAttribute('style', 'color:yellow;font-size:3em');
 		else nowTime.setAttribute('style', 'color:#3c3;font-size:3em');
 		
-		for(i = 0; i < 3; i++){
+		for(let i = 0; i < 3; i++){
 			if(time[i] < 10) time[i] = '0' + time[i];
 		}
 		nowHour.innerText = time[0];
 		nowTime.innerHTML = time[1] + '<span style="font-size:0.4em">分</span>' + time[2] + '<span style="font-size:0.4em">秒</span>';
+
 	}, 100);
 
-	// 7-B. 描画処理
-	this.setInterval(() => {
+	// 8-B. 描画処理
+	setInterval(() => {
 		if(isFileRoaded){
 			nowDate = new Date();
 				if(isAutoScroll){
-					deltaX = -(time[0] * 3600 + nowDate.getMinutes() * 60 + nowDate.getSeconds() + nowDate.getMilliseconds() / 1000) + 50 / scales[sX];
+					let delta = 50;
+					if(isLocationShowing) delta = 350;
+					deltaX = -(time[0] * 3600 + nowDate.getMinutes() * 60 + nowDate.getSeconds() + nowDate.getMilliseconds() / 1000) + delta / scales[sX];
 				}
 				draw();
 		}
-	}, 500);
+	}, 100);
+
+	// 8-C. 差分入力欄整形
+	setInterval(() => {
+		if(isFileRoaded){
+			commitOffset();
+		}
+	}, 100);
+
+	//8-D. 自動スクロール
+	setInterval(() => {
+		for(let i = 0; i < scrollable.length; i++){
+			moveRange[i] = scrollableContent[i].offsetWidth - scrollable[i].offsetWidth;
+			moveAmount[i] += move;
+			if(moveAmount[i] > moveRange[i] + 500) moveAmount[i] = -500;
+			scrollable[i].scrollTo(moveAmount[i], 0); 
+		}
+		// cons(moveRange + " " + moveAmount);
+	}, 15);
+
 })
 
-
-// 8. getElem短縮
+// 9. getElem短縮
 function $(elemId) {
 	return document.getElementById(elemId);
 }
 
-// 9. console.log短縮
+// 10. console.log短縮
 function cons(content) {
 	return console.log(content);
 }
