@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+	<title>架鉄運用作成ツール | 芽河製作所</title>
+	<meta name="author" content="Arrk_YR">
+	<meta charset="UTF-8">
+	<meta name="description" content="鉄道運行データをスタフを表示して作成・編集する事が出来るツールです。ダイヤグラム表示機能も実装予定あり。">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="shortcut icon" href="assets/rw_op_helper/thumb.png" type="image/x-icon">
+	<meta name="robots" content="noindex,nofollow">
+	<link rel="stylesheet" href="ress_min.css">
+	<!-- <link rel="stylesheet" href="style.css"> -->
+	<meta name="format-detection" content="email=no,telephone=no,address=no">
+	<meta prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# article: http://ogp.me/ns/website#" />
+	<meta property="og:url" content="https://arrkmekawa.github.io/mekawa/rw_op_maker.html" />
+	<meta property="og:type" content="article" />
+	<meta property="og:title" content="鉄道運用作成ツール" />
+	<meta property="og:description" content="鉄道運行データをスタフを表示して作成・編集する事が出来るツールです。" />
+	<meta property="og:image" content="https://arrkmekawa.github.io/mekawa/assets/rw_op_helper/thumb.png" />
+	<meta name="twitter:card" content="summary_large_image" />
+	<meta name="twitter:site" content="@Arrk_YR" />
+	<meta name="twitter:title" content="架鉄運用作成ツール | 芽河製作所">
+	<meta name="twitter:image" content="https://arrkmekawa.github.io/mekawa/assets/rw_op_helper/large_thumb.png">
+	<style>
+		/* *{
+			-ms-overflow-style: none;
+			scrollbar-width: none;
+		}
+
+		*::-webkit-scrollbar {
+			display: none;
+		} */
+
+		body{
+			font-family: 'LINE Seed JP_OTF', 'M+ 2c',  sans-serif;
+			background-color: #eee;
+			margin-bottom: 10px;
+		}
+		h1, h2{
+			font-weight: 700;
+		}
+		hr{
+			border: transparent;
+			background: #888;
+			height: 1px;
+			margin: 0;
+		}
+		div{
+			background-color: #0fa1;
+		}
+		span{
+			display: inline-block;
+		}
+		.opTable{
+			margin: 3px auto;
+		}
+		.opTable td{
+			border-top: solid 1px #064;
+		}
+		#opEdit{
+			position: fixed;
+			display:block;
+			width: 60%;
+			min-width: 34em;
+			background: linear-gradient(130deg, #dfec, #becc);
+			border: solid #064 1px;
+			top: 50px;
+			right: 0;
+			text-align: center;
+			padding: 10px;
+			max-height: 80vh;
+			overflow-y: scroll
+		}
+		.btn{
+			padding: 2px 15px;
+			border: solid 1px #bbb;
+			background: linear-gradient(130deg, #eee, #ccc);
+			border-radius: 5px;
+			margin: 2px 3px;
+		}
+		.btn2{
+			padding: 2px 15px;
+			border: solid 1px #bbb;
+			background: linear-gradient(130deg, #dfe, #bec);
+			border-radius: 5px;
+			margin: 2px 3px;
+		}
+		.field{
+			padding: 2px 5px;
+			border: solid 1px #ccc;
+			background-color: #eee;
+			width: 10em;
+		}
+		.opField{
+			padding: 2px 5px;
+			border: solid 1px #ccc;
+			background-color: #eee;
+			width: calc(100% - 1.5em);
+		}
+		.num{
+			text-align: end;
+		}
+		.select{
+			padding: 2px 5px;
+			border: solid 1px #ccc;
+			border-right: solid 20px #ccc;
+			background-color: #eee;
+			width: calc(100% - 1.5em)
+		}
+		.width6em{
+			width: 6em;
+		}
+
+		.scrollable{
+			overflow-x: auto;
+			white-space: nowrap;
+		}
+		.scrollableContent{
+			padding: 0 10px;
+		}
+		.underDev{
+			opacity: 0.2;
+		}
+	</style>
+</head>
+
+<body>
+	<h1>鉄道運用作成ツールを作りたい</h1>
+	<p>
+		<b>確認されている不具合に対する解決方法</b><br>
+		・種別名・路線名は一意にしてください。<br>
+		・路線名・駅名に「|(半角)」を使用しないでください。<br>
+		・別の運用を編集する際は必ず「保存」してください。<br>
+		・種別を選択肢から選ぶ際は必ず代替欄を空白にしてください。<br>
+		<a href="rw_op_helper.html" target="_blank">ダイヤ表示はこちらから❏</a>
+	</p>
+	<div id="read">
+		<h3>ファイルを編集する</h3>
+		<input type="file" name="filereader" id="btn_fileRead" draggable="true">
+		<h3>または <input type="button" value="新規作成" style="text-decoration: underline;color: #064;" onclick="makeNew()"></h3>
+		<p id="p_msg">2023/2/9 2300</p>
+		<p>Made by 芽河製作所 Twitter: <a href="https://twitter.com/Arrk_YR" target="_blank">@Arrk_YR</a></p>
+	</div>
+	<div id="editor">
+		<section id="about"></section>
+		<section id="configType"></section>
+		<section id="configStns"></section>
+		<section id="opSummary"></section>
+		<section id="opDetail"></section>
+		<section id="save" style="display: none;">
+			<h2>
+				<input class="btn" type="button" value="エクスポートする" onclick="exportJson()">
+			</h2>
+		</section>
+	</div>
+	<!-- <div style="min-height: 300px;">
+		<textarea id="exportData" style="width: 100%; position: fixed;bottom: 0;resize: none;background-color: #ccc;" rows="10"></textarea>	
+	</div> -->
+	<div id="opEdit" style="display: none;">
+		<h2>
+			運用番号
+			<input type="text" class="field" id="opName" value="161" style="text-align: center;width: 200px;">
+			<input type="button" value="保存" class="btn" style="float: right;" onclick="closeOpEdit(); location.href='#opSummary'">
+		</h2>
+		<hr style="margin: 10px;clear: both;">
+		<h3 id="opSection">A → B</h3>
+		<section>
+			<p>
+				種別：
+				<select id="slType" class="select" style="width:7em" onchange="refreshOpEdit(0)">
+					<option>普通</option>
+					<option>快速</option>
+				</select>
+				または
+				<input type="text" class="field" id="altType" onchange="refreshOpEdit('at')">
+			</p>
+			<p>
+				色：
+				<input type="checkbox" id="implementByType" style="transform: scale(2);" onclick="refreshOpEdit(0)">
+				種別から継承 または 
+				<input type="text" class="field" id="opColorField" onchange="refreshOpEdit('cf')">
+				<input type="color" id="opColorPicker" onchange="refreshOpEdit('cp')">
+			</p>
+			<p>
+				前：<input type="text" class="field" id="opPrev">
+				次：<input type="text" class="field" id="opNext">
+			</p>
+			<p>
+				備考：<input type="text" class="field" style="width: calc(100% - 4em);" id="description">
+			</p>
+			<hr style="margin: 10px;">
+			<table style="margin: auto;" id="opEditor">
+			</table>
+			<hr style="margin: 10px;">
+			<h3>運用を操作</h3>
+			<p>
+				<input type="button" class="btn" value="-10分" onclick="shiftOpTime(-600)">
+				<input type="button" class="btn" value="-1分" onclick="shiftOpTime(-60)">
+				<input type="button" class="btn" value="-5秒" onclick="shiftOpTime(-5)">
+				<input type="button" class="btn" value="+5秒" onclick="shiftOpTime(5)">
+				<input type="button" class="btn" value="+1分" onclick="shiftOpTime(60)">
+				<input type="button" class="btn" value="+10分" onclick="shiftOpTime(600)">
+			</p>
+			<p>
+				<input type="number" class="field num" id="opShiftTime" value="1200">
+				秒ずらして
+				<input type="button" class="btn" value="複製する" onclick="doublicateOp()">
+			</p>
+			<p>
+				<input type="button" class="btn" value="この運用を削除する" onclick="deleteOp()">
+			</p>
+		</section>
+	</div>
+	<script src="assets/rw_op_maker/script.js"></script>
+</body>
+</html>
+
