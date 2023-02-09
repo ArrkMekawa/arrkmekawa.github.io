@@ -82,6 +82,7 @@ function setOffset(hourOffset, minOffset){
 }
 
 // 2. JSONファイルを読み込む
+let colors = new Object();
 function fileRead() {
 	let file = event.target.files[0];
 	let reader = new FileReader();
@@ -93,7 +94,9 @@ function fileRead() {
 		adjVertical();     // 5-M. 縦を全体に合わせる
 		makeStnNumIndex(); // 2-C. 駅番号をインデックス化する
 		makeOpData();      // 2-D. 在線表示用データを作成する
-		$("chOfsBtns").setAttribute("style", "display: inline;"); // 差分偏光ボタン表示
+		colors = jsonData.colors; // カラーインデックス作成
+		cons(colors);
+		$("chOfsBtns").setAttribute("style", "display: inline;"); // 差分変更欄表示
 	}
 	reader.readAsText(file);
 }
@@ -198,7 +201,7 @@ function makeOpData(){
 		}
 		operationData.push(operation);
 	}
-	cons("在線用インデックス↓")
+	cons("在線用インデックス↓ object:operationData")
 	cons(operationData);
 }
 
@@ -375,7 +378,7 @@ function draw(){
 	let moved = false;
 	for(let i = 0; i < jsonData.operations.length; i++){
 		ctx.beginPath();
-		ctx.strokeStyle = jsonData.operations[i].color;
+		ctx.strokeStyle = jsonData.operations[i].color ?? colors[jsonData.operations[i].type] ?? "#222";
 		moved = false;
 		for(let j = 0; j < jsonData.operations[i].stops.length; j++){
 			//先に駅(y)を取得する
@@ -447,7 +450,7 @@ function draw(){
 					let direction = operationData[i].timeSchedule[j].direction;
 					if(fromPos < toPos || (fromPos == toPos && direction == "d")){ //下り線
 						ctx.beginPath();
-						ctx.fillStyle = operationData[i].color;
+						ctx.fillStyle = jsonData.operations[i].color ?? colors[jsonData.operations[i].type] ?? "#222";
 						ctx.moveTo(115, drawViewPosY);
 						ctx.lineTo(125, drawViewPosY - 10);
 						ctx.lineTo(125, drawViewPosY);
@@ -463,7 +466,7 @@ function draw(){
 						// cons(operationData[i].opNum + "/" + operationData[i].type + "," + j)
 					}else{
 						ctx.beginPath();
-						ctx.fillStyle = operationData[i].color;
+						ctx.fillStyle = jsonData.operations[i].color ?? colors[jsonData.operations[i].type] ?? "#222";
 						ctx.moveTo(85, drawViewPosY);
 						ctx.lineTo(75, drawViewPosY + 10);
 						ctx.lineTo(75, drawViewPosY);
@@ -545,6 +548,7 @@ function translateY(value){
 
 // 4-L. 時刻変換
 function time2sec(time){
+	time = Number.parseInt(time);
 	let hour = Math.floor(time / 10000);
 	let min = Math.floor((time % 10000) / 100);
 	let sec = time % 100;
