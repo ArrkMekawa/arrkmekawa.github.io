@@ -8,6 +8,7 @@ btn_fileRead.addEventListener('change', fileRead);
 let p_msg = $("p_msg");
 let jsonData;
 let isFileRoaded = false;
+let fileName = "newOperation";
 
 // 2. JSONファイルを読み込む
 let colors = new Object();
@@ -15,6 +16,7 @@ function fileRead() {
 	let file = event.target.files[0];
 	let reader = new FileReader();
 	reader.onload = function (event) {
+		fileName = file.name.split('.')[0];
 		jsonData = JSON.parse(event.target.result);
 		cons(jsonData);
 		applyChange();
@@ -80,8 +82,9 @@ function applyChange(){
 	// 3-A. ダイヤ情報
 	secAbout.innerHTML 
 		= '<h2>ダイヤ情報</h2>'
-		+ '会社名：<input class="field" id="elemCopName" type="text" value="' + jsonData.copName + '" style="width:70%" onchange="editInfo()"><br>' 
-		+ '説明　：<input class="field" id="elemDesc" type="text" value="' + jsonData.description + '" style="width:90%" onchange="editInfo()">';
+		+ 'ファイル名：<input class="field" id="fileName" type="text" value="' + fileName + '" style="width:calc(90% - 7em)" onchange="editInfo()">.json<br>' 
+		+ '会社名　　：<input class="field" id="elemCopName" type="text" value="' + jsonData.copName + '" style="width:calc(90% - 5em)" onchange="editInfo()"><br>' 
+		+ '説明　　　：<input class="field" id="elemDesc" type="text" value="' + jsonData.description + '" style="width:calc(90% - 5em)" onchange="editInfo()">';
 
 	setType();
 	setStns();
@@ -172,11 +175,11 @@ function setOps(){
 			+ '<tr><th>運番</th><th>' + opData.opNum + '</th><th><input class="btn" type="button" value="編集" onclick="showOpEditView('+ i +')"></th></tr>'
 			+ '<tr><td>種別</td><td>' + (opData.type ?? "普通") + '</td><td><input class="btn" type="button" value="右へ" onclick="sortOperations('+ i +', 1)"></td></tr>'
 			+ '<tr><td>色</td><td>' + opColor + '</td><td><input class="btn" type="button" value="左へ" onclick="sortOperations('+ i +', -1)"></td></tr>'
-			+ '<tr><td>前の</td><td>' + (opData.opPrevNum ?? "") + '</td></tr>'
-			+ '<tr><td>次の</td><td>' + (opData.opNextNum ?? "") + '</td></tr>'
+			+ '<tr><td>前の</td><td>' + (opData.opPrevNum ?? "") + '</td><td><input class="btn" type="button" value="複製" onclick="doublicateOpDirect('+ i +')"></td></tr>'
+			+ '<tr><td>次の</td><td>' + (opData.opNextNum ?? "") + '</td><td><input class="btn" type="button" value="削除" onclick="deleteOpDirect('+ i +')"></td></tr>'
 		+ '</table><table class="opTable">'
 		+ '<tr><th>停車駅</th><th>着時刻</th><th>発時刻</th></tr>';
-		elemOpSumary += '<span style="border-left:solid 1em '+ opColor +';margin:5px"><a href="#operation' + i + '">' + opData.opNum + '</a> : ';
+		elemOpSumary += '<span style="border-left:solid 1em '+ opColor +';margin:5px"><a href="" onclick="showOpEditView(' + i + ');return false">' + opData.opNum + '</a> : ';
 		for (let j = 0; j < opData.stops.length; j++) {
 			const stopStn = opData.stops[j];
 			// cons(stopStn);
@@ -191,7 +194,7 @@ function setOps(){
 		elemOpDetail += '</table></div>';
 	}
 	secOpSummary.innerHTML = '<h2>運用一覧</h2><p>' + elemOpSumary + '</p>';
-	secOpDetail.innerHTML = '<h2>運用詳細</h2><div style="width:100%;overflow-x:scroll"><div style="display:flex;width:max-content">' + elemOpDetail + '</div></div>';
+	secOpDetail.innerHTML = '<h2>運用詳細 (複製時のシフト時間:' + $('opShiftTime').value + '秒)</h2><div style="width:100%;overflow-x:scroll"><div style="display:flex;width:max-content">' + elemOpDetail + '</div></div>';
 }
 
 //4 概要編集
@@ -468,8 +471,8 @@ function showOpEditorContent(){
 			+'</select><br>'
 		+'<span id="time_'+ i +'"></span>'
 		+'</td><td>'
-			+'着:<input type="text" id="editorArr_'+ i +'" class="opField num" onchange="changeOpStnInfo('+ i +', 1)"><br>'
-			+'発:<input type="text" id="editorDep_'+ i +'" class="opField num" onchange="changeOpStnInfo('+ i +', 2)">'
+			+'着:<input type="text" id="editorArr_'+ i +'" class="opField num" onchange="changeOpStnInfo('+ i +', 1)" onfocus="detectFocusingTime('+ i +', 1)"><br>'
+			+'発:<input type="text" id="editorDep_'+ i +'" class="opField num" onchange="changeOpStnInfo('+ i +', 2)" onfocus="detectFocusingTime('+ i +', 2)">'
 		+'</td><td>'
 			+'<select id="editorIsPassage_'+ i +'" class="select" onchange="changeOpStnInfo('+ i +', 4)">'
 				+'<option value="false">停車</option>'
@@ -485,6 +488,11 @@ function showOpEditorContent(){
 		+'</td></tr>';
 	}
 	elemOpEditor.innerHTML = opEditorContent;
+	applyTableValueChange();
+}
+
+// 7-C1 運行表の値を変更する
+function applyTableValueChange(){
 	for(let i = 0; i < tmpOpData.stops.length; i++){
 		let stopStnInfo = tmpOpData.stops[i];
 		$('editorStn_'+ i).value = stopStnInfo.lineName + '|' + stopStnInfo.stnName;
@@ -497,6 +505,7 @@ function showOpEditorContent(){
 	}
 }
 
+let beforeShiftingTime = 0;
 // 7-D 駅情報を変更する
 function changeOpStnInfo(pos, category){
 	if(category == 0){ // --------------------------駅名
@@ -511,16 +520,46 @@ function changeOpStnInfo(pos, category){
 		let value = $('editorArr_' + pos).value;
 		// cons(value);
 		if(value == "") value = null;
+		else{
+			let differenceTime = time2sec(value) - beforeShiftingTime;
+			cons(differenceTime);
+			for (let i = 0; i < tmpOpData.stops.length; i++) {
+				// cons(pos + ", " + category + ", " + i , ", " + $('shiftBefore').checked);
+				if((i < pos && $('shiftBefore').checked) || (i > pos && $('shiftAfter').checked)){
+					if(tmpOpData.stops[i].arrTime != null) tmpOpData.stops[i].arrTime = sec2time(time2sec(tmpOpData.stops[i].arrTime) + differenceTime);
+					if(tmpOpData.stops[i].depTime != null) tmpOpData.stops[i].depTime = sec2time(time2sec(tmpOpData.stops[i].depTime) + differenceTime);
+				}else if(i == pos && $('shiftAfter').checked){
+					if(tmpOpData.stops[i].depTime != null) tmpOpData.stops[i].depTime = sec2time(time2sec(tmpOpData.stops[i].depTime) + differenceTime);
+				}
+			}
+		}
 		tmpOpData.stops[pos].arrTime = value;
-		calcReqTime(pos)
-		calcReqTime(pos + 1)
+		beforeShiftingTime = time2sec(value);
+		applyTableValueChange();
+		calcReqTime(pos);
+		calcReqTime(pos + 1);
 	}else if(category == 2){ // --------------------出発時刻
 		let value = $('editorDep_' + pos).value;
 		// cons(value);
 		if(value == "") value = null;
+		else{
+			let differenceTime = time2sec(value) - beforeShiftingTime;
+			cons(differenceTime);
+			for (let i = 0; i < tmpOpData.stops.length; i++) {
+				// cons(pos + ", " + category + ", " + i , ", " + $('shiftBefore').checked);
+				if((i < pos && $('shiftBefore').checked) || (i > pos && $('shiftAfter').checked)){
+					if(tmpOpData.stops[i].arrTime != null) tmpOpData.stops[i].arrTime = sec2time(time2sec(tmpOpData.stops[i].arrTime) + differenceTime);
+					if(tmpOpData.stops[i].depTime != null) tmpOpData.stops[i].depTime = sec2time(time2sec(tmpOpData.stops[i].depTime) + differenceTime);
+				}else if(i == pos && $('shiftAfter').checked){
+					if(tmpOpData.stops[i].arrTime != null) tmpOpData.stops[i].arrTime = sec2time(time2sec(tmpOpData.stops[i].arrTime) + differenceTime);
+				}
+			}
+		}
 		tmpOpData.stops[pos].depTime = value;
-		calcReqTime(pos)
-		calcReqTime(pos + 1)
+		beforeShiftingTime = time2sec(value);
+		applyTableValueChange();
+		calcReqTime(pos);
+		calcReqTime(pos + 1);
 	}else if(category == 3){ // --------------------詳細
 		let value = $('editorDesc_' + pos).value;
 		// cons(value);
@@ -622,6 +661,13 @@ function doublicateOp() {
 	shiftOpTime(Number.parseInt($('opShiftTime').value));
 }
 
+// 7-H1 運用を直接複製する
+function doublicateOpDirect(pos){
+	showOpEditView(pos);
+	doublicateOp();
+	closeOpEdit();
+}
+
 // 7-I 運用を削除する
 function deleteOp(){
 	if(jsonData.operations.length > 1){
@@ -632,6 +678,23 @@ function deleteOp(){
 		cons('運用が1つしかありません');
 	}
 }
+
+function deleteOpDirect(pos){
+	editingOpId = pos;
+	deleteOp();
+}
+
+// 7-J 入力欄の時刻を検出する
+function detectFocusingTime(pos, category){
+	if(category == 1){
+		beforeShiftingTime = $('editorArr_' + pos).value;
+	}else if(category == 2){
+		beforeShiftingTime = $('editorDep_' + pos).value;
+	}
+	beforeShiftingTime = time2sec(beforeShiftingTime);
+	cons(beforeShiftingTime);
+}
+
 
 // 7-Y 駅間所要時間を表示する pos < stops.length;
 function calcReqTime(pos){
@@ -706,7 +769,7 @@ function exportJson(){
 	const url = URL.createObjectURL(blob);
 	const a = document.createElement("a");
 	document.body.appendChild(a);
-	a.download = 'newOperation.json';
+	a.download = $('fileName').value + '.json';
 	a.href = url;
 	a.click();
 	a.remove();
