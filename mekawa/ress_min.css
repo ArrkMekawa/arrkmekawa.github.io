@@ -113,10 +113,12 @@ button {
   width: auto;
 }
 [type="search"] {
+  appearance: auto;
   -webkit-appearance: textfield;
 }
 [type="search"]::-webkit-search-cancel-button,
 [type="search"]::-webkit-search-decoration {
+  appearance: auto;
   -webkit-appearance: none;
 }
 textarea {
@@ -153,6 +155,7 @@ button:-moz-focusring {
 [type="submit"],
 button,
 html [type="button"] {
+  appearance: auto;
   -webkit-appearance: button;
 }
 button,
@@ -168,6 +171,7 @@ textarea {
   color: inherit;
 }
 select {
+  appearance: auto;
   -moz-appearance: none;
   -webkit-appearance: none;
 }
@@ -185,10 +189,12 @@ legend {
   white-space: normal;
 }
 ::-webkit-file-upload-button {
+  appearance: auto;
   -webkit-appearance: button;
   font: inherit;
 }
 [type="search"] {
+  appearance: auto;
   -webkit-appearance: textfield;
   outline-offset: -2px;
 }
@@ -234,4 +240,7 @@ video {
   background-color: #b3d4fc;
   color: #000;
   text-shadow: none;
+}
+li{
+  margin-left: 2em;
 }

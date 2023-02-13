@@ -24,19 +24,11 @@
 	<meta name="twitter:title" content="架鉄運用作成ツール | 芽河製作所">
 	<meta name="twitter:image" content="https://arrkmekawa.github.io/mekawa/assets/rw_op_helper/large_thumb.png">
 	<style>
-		/* *{
-			-ms-overflow-style: none;
-			scrollbar-width: none;
-		}
-
-		*::-webkit-scrollbar {
-			display: none;
-		} */
-
 		body{
 			font-family: 'LINE Seed JP_OTF', 'M+ 2c',  sans-serif;
 			background-color: #eee;
 			margin-bottom: 10px;
+			margin-left: 5px;
 		}
 		h1, h2{
 			font-weight: 700;
@@ -123,6 +115,9 @@
 		.underDev{
 			opacity: 0.2;
 		}
+		li::marker{
+			color: #064;
+		}
 	</style>
 </head>
 
@@ -137,11 +132,9 @@
 		<a href="rw_op_helper.html" target="_blank">ダイヤ表示はこちらから❏</a>
 	</p>
 	<div id="read">
-		<h3>ファイルを編集する</h3>
+		<h2>ファイルを編集する</h2>
 		<input type="file" name="filereader" id="btn_fileRead" draggable="true">
 		<h3>または <input type="button" value="新規作成" style="text-decoration: underline;color: #064;" onclick="makeNew()"></h3>
-		<p id="p_msg">2023/2/9 2300</p>
-		<p>Made by 芽河製作所 Twitter: <a href="https://twitter.com/Arrk_YR" target="_blank">@Arrk_YR</a></p>
 	</div>
 	<div id="editor">
 		<section id="about"></section>
@@ -155,18 +148,40 @@
 			</h2>
 		</section>
 	</div>
+	<div>
+		<h2>更新履歴</h2>
+		<ul>
+			<li>
+				<b>release - 1.1 (2023/02/13)</b>
+				<ul>
+					<li>ファイル名入力欄を設置</li>
+					<li>運用一覧の運用番号から直接編集画面を表示するよう変更</li>
+					<li>運用詳細一覧の部分でも運用の複製/削除ができるように変更</li>
+					<li>運用編集画面にて上部を固定</li>
+					<li>運用時刻編集欄にて時間シフト機能を実装</li>
+				</ul>
+			</li>
+			<li>
+				<b>release - 1.0 (2023/02/09)</b>
+			</li>
+		</ul>
+		<p id="p_msg">2023/2/13 1830</p>
+		<p>Made by 芽河製作所 Twitter: <a href="https://twitter.com/Arrk_YR" target="_blank">@Arrk_YR</a></p>
+	</div>
 	<!-- <div style="min-height: 300px;">
 		<textarea id="exportData" style="width: 100%; position: fixed;bottom: 0;resize: none;background-color: #ccc;" rows="10"></textarea>	
 	</div> -->
 	<div id="opEdit" style="display: none;">
-		<h2>
-			運用番号
-			<input type="text" class="field" id="opName" value="161" style="text-align: center;width: 200px;">
-			<input type="button" value="保存" class="btn" style="float: right;" onclick="closeOpEdit(); location.href='#opSummary'">
-		</h2>
-		<hr style="margin: 10px;clear: both;">
-		<h3 id="opSection">A → B</h3>
-		<section>
+		<div style="position: fixed;width: inherit;padding-right: 1em;font-weight: bold;">
+			<div style="display: flex;font-size: 1.5em;">
+				<span style="margin:auto">運用番号</span>
+				<input type="text" class="field" id="opName" value="161" style="text-align: center;width: 200px;flex-grow: 2;">
+				<input type="button" value="保存" class="btn" style="float: right;" onclick="closeOpEdit(); location.href='#opSummary'">
+			</div>
+			<h3 id="opSection">A → B</h3>
+			<hr style="margin: 10px;clear: both;">
+		</div>
+		<section style="margin-top: 6em;">
 			<p>
 				種別：
 				<select id="slType" class="select" style="width:7em" onchange="refreshOpEdit(0)">
@@ -189,6 +204,13 @@
 			</p>
 			<p>
 				備考：<input type="text" class="field" style="width: calc(100% - 4em);" id="description">
+			</p>
+			<p style="line-height: 2em;">
+				時間変更時に◆
+				<input type="checkbox" id="shiftBefore" style="transform: scale(2);">
+				以前の時間をずらす◆
+				<input type="checkbox" id="shiftAfter" style="transform: scale(2);">
+				以後の時間をずらす
 			</p>
 			<hr style="margin: 10px;">
 			<table style="margin: auto;" id="opEditor">
