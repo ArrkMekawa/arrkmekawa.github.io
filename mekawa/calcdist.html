@@ -6,7 +6,7 @@
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<link rel="shortcut icon" href="assets/logo.png" type="image/x-icon">
-		<title>道のり計算ツール | 芽河製作所</title>
+		<title>道のり計算ツール</title>
 		<style>
 			body{
 				text-align: center;
@@ -123,7 +123,7 @@
 
 	<body id="body">
 		<h1>道のり計算ツール</h1>
-		<input type="checkbox" id="openOverview" style="display: none;">
+		<input type="checkbox" name="" id="openOverview" style="display: none;">
 		<label for="openOverview">
 			<section class="overview" style="width: 80%;margin: 0 auto">
 				<hr>
@@ -216,16 +216,21 @@
 
 		<hr style="clear: both;">
 		<p>
-			2022/11/11 芽河製作所<br>
-			Ver: release - 0.6A<br>
-			(c)2022 Arrk Twitter: <a href="https://twitter.com/Arrk_YR" target="_blank">@Arrk_YR</a><br>
+			2023/02/10 芽河製作所<br>
+			Ver: release - 1.0<br>
+			(c)2022-2023 Arrk Twitter: <a href="https://twitter.com/Arrk_YR" target="_blank">@Arrk_YR</a><br>
 			<br>
 			--- 更新履歴 ---<br>
 			<table align="center">
 				<tr>
+					<td>release - 1.0</td>
+					<td>2023/02/10</td>
+					<td>常時描画から更新時に描画するよう変更。</td>
+				</tr>
+				<tr>
 					<td>release - 0.6 (development)</td>
 					<td>2022/11/06</td>
-					<td>表の1列目にフォーカスした際に、<br>高さが変化しないよう修正。<br>(0.6A) タイトル正式決定</td>
+					<td>表の1列目にフォーカスした際に、<br>高さが変化しないよう修正。<br>(0.6A)タイトル正式決定</td>
 				</tr>
 				<tr>
 					<td>release - 0.5 (development)</td>
@@ -266,7 +271,7 @@
 </html>
 
 <script>
-// 	console.log("\n\n\n◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤")
+//	console.log("\n\n\n◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤")
 	//最初からある入力枠の取得
 	let posx = [document.getElementById("x0"), document.getElementById("x1")];
 	let posz = [document.getElementById("z0"), document.getElementById("z1")];
@@ -332,8 +337,8 @@
 			drawPosx[i] = Math.round((gradient * (x[i] - mid[0])) + 200);
 			drawPosz[i] = Math.round((gradient * (z[i] - mid[1])) + 200);
 		}
+		draw();
 	}
-	getDist();
 	
 	//行を追加するボタン
 	const tableElem = document.getElementById("mainTable");
@@ -342,9 +347,9 @@
 	function insRow(clickedPos){
 		//clickedPos:押されたボタンの番号(起番は0)
 		if(clickedPos == -1) clickedPos = pointCount - 1;
-// 		console.log(parseInt(clickedPos) + 1);
+//		console.log(parseInt(clickedPos) + 1);
 		pointCount++;
-// 		console.log("pointCount = " + pointCount);
+//		console.log("pointCount = " + pointCount);
 
 		const trElem = tableElem.tBodies[0].insertRow(-1);
 		trElem.setAttribute("class", "switchCell");
@@ -358,7 +363,7 @@
 		tableElem.rows[clickedPos + 2].animate({background: ["#6bf5c8", "#fff0"],height: ["0", "auto"],},{duration: 2500});
 		x.splice(clickedPos, 0, x[clickedPos]);
 		z.splice(clickedPos, 0, z[clickedPos]);
-// 		console.log(x);
+//		console.log(x);
 
 		cellElem0.innerHTML = "<span class=\"shownCell\">" + (pointCount - 1) + "</span><span class=\"hiddenCell\"><input type=\"button\" value=\"+複製\" onclick=\"insRow(" + (pointCount - 1) + ")\"><input type=\"button\" value=\"-削除\" onclick=\"delRow(" + (pointCount - 1) + ")\"><input type=\"button\" value=\"=中間\" onclick=\"getAve(" + (pointCount - 1) + ")\"></span>";
 
@@ -371,13 +376,13 @@
 		posz.push(document.getElementById("z" + (pointCount - 1)));
 		posx[pointCount - 1].addEventListener("input", getDist);
 		posz[pointCount - 1].addEventListener("input", getDist);
-// 		console.log(posx);
+//		console.log(posx);
 
 		for(i = clickedPos; i < pointCount - 1; i++){
 			posx[i].value = x[i];
 			posz[i].value = z[i];
 		}
-// 		console.log(x);
+//		console.log(x);
 
 		getDist();
 	}
@@ -457,7 +462,7 @@
 		if(sizeofNum > 100) sizeofNum = 100;
 		document.getElementById("sizeofNum").value = sizeofNum;
 	}
-	function draw(timestamp){
+	function draw(){
 		// console.log(sizeofNum);
 		// msg2.innerText = drawPosx.toString();
 		//最大値最小値から中心の値を算出
@@ -494,9 +499,8 @@
 		context.strokeStyle = "#0F0"
 		context.strokeRect(drawPosx[drawPosx.length-1]-10, drawPosz[drawPosx.length-1]-10, 20, 20)
 
-		window.requestAnimationFrame((ts) => draw(ts));
 	}
-	window.requestAnimationFrame((ts) => draw(ts));
+	getDist();
 
 	//レイアウトを変更する
 	const maincontent= document.getElementById("maincontent");
