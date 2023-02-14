@@ -22,26 +22,37 @@
 	<meta name="twitter:card" content="summary_large_image" />
 	<meta name="twitter:site" content="@Arrk_YR" />
 	<meta name="twitter:title" content="架鉄運用作成ツール | 芽河製作所">
-	<meta name="twitter:image" content="https://arrkmekawa.github.io/mekawa/assets/rw_op_helper/large_thumb.png">
+	<meta name="twitter:image" content="https://arrkmekawa.github.io/mekawa/assets/rw_op_maker/large_thumb.png">
 	<style>
+		:root{
+			--color0: #032;
+			--color1: #064;
+			--color2: #bec;
+			--color-field: #e0fff4;
+		}
+		*{
+			transition: ease-out 0.5s;
+		}
 		body{
 			font-family: 'LINE Seed JP_OTF', 'M+ 2c',  sans-serif;
-			background-color: #eee;
+			/* background-color: #eee; */
+			min-width: 500px;
 			margin-bottom: 10px;
 			margin-left: 5px;
 		}
 		h1, h2{
-			font-weight: 700;
+			/* font-weight: 700; */
+			color: var(--color0);
 		}
 		hr{
 			border: transparent;
 			background: #888;
 			height: 1px;
-			margin: 0;
+			margin: 0.5em 0;
 		}
-		div{
+		/* div{
 			background-color: #0fa1;
-		}
+		} */
 		span{
 			display: inline-block;
 		}
@@ -49,15 +60,15 @@
 			margin: 3px auto;
 		}
 		.opTable td{
-			border-top: solid 1px #064;
+			border-top: solid 1px var(--color1);
 		}
 		#opEdit{
 			position: fixed;
 			display:block;
 			width: 60%;
 			min-width: 34em;
-			background: linear-gradient(130deg, #dfec, #becc);
-			border: solid #064 1px;
+			background: linear-gradient(130deg, white, #e0fff4e0);
+			border: solid var(--color1) 1px;
 			top: 50px;
 			right: 0;
 			text-align: center;
@@ -82,13 +93,13 @@
 		.field{
 			padding: 2px 5px;
 			border: solid 1px #ccc;
-			background-color: #eee;
+			background-color: var(--color-field);
 			width: 10em;
 		}
 		.opField{
 			padding: 2px 5px;
 			border: solid 1px #ccc;
-			background-color: #eee;
+			background-color: var(--color-field);
 			width: calc(100% - 1.5em);
 		}
 		.num{
@@ -98,7 +109,7 @@
 			padding: 2px 5px;
 			border: solid 1px #ccc;
 			border-right: solid 20px #ccc;
-			background-color: #eee;
+			background-color: #f8f8f8;
 			width: calc(100% - 1.5em)
 		}
 		.width6em{
@@ -116,24 +127,27 @@
 			opacity: 0.2;
 		}
 		li::marker{
-			color: #064;
+			color: var(--color1);
+		}
+		.filereader{
+			border: solid 1px var(--color1);
+			padding: 10px;
+			width: 100%;
+			background-color: var(--color2);
+		}
+		.filereader:hover{
+			background-color: white;
 		}
 	</style>
 </head>
 
 <body>
-	<h1>鉄道運用作成ツールを作りたい</h1>
-	<p>
-		<b>確認されている不具合に対する解決方法</b><br>
-		・種別名・路線名は一意にしてください。<br>
-		・路線名・駅名に「|(半角)」を使用しないでください。<br>
-		・別の運用を編集する際は必ず「保存」してください。<br>
-		・種別を選択肢から選ぶ際は必ず代替欄を空白にしてください。<br>
-		<a href="rw_op_helper.html" target="_blank">ダイヤ表示はこちらから❏</a>
-	</p>
+	<img src="assets/logo_name.png" style="height: 50px;vertical-align: middle;float: right;">
+	<h1><span>鉄道運用作成ツールを作りたい</span></h1>
+	<hr>
 	<div id="read">
-		<h2>ファイルを編集する</h2>
-		<input type="file" name="filereader" id="btn_fileRead" draggable="true">
+		<h2>ファイルを編集する<small>(ドラッグ&ドロップ可)</small></h2>
+		<input type="file" name="filereader" class="filereader" id="btn_fileRead" draggable="true">
 		<h3>または <input type="button" value="新規作成" style="text-decoration: underline;color: #064;" onclick="makeNew()"></h3>
 	</div>
 	<div id="editor">
@@ -144,13 +158,34 @@
 		<section id="opDetail"></section>
 		<section id="save" style="display: none;">
 			<h2>
-				<input class="btn" type="button" value="エクスポートする" onclick="exportJson()">
+				<input class="btn2" type="button" value="エクスポートする" onclick="exportJson()">
 			</h2>
 		</section>
+		ダイヤ表示は<a href="rw_op_helper.html" target="_blank" style="color: #064;font-weight: bold;">こちら❏</a>から
 	</div>
 	<div>
+		<hr>
+		<h2>確認されている不具合に対する解決方法</h2>
+		<p>
+			・種別名・路線名は一意にしてください。<br>
+			・路線名・駅名に「|(半角)」を使用しないでください。<br>
+			・別の運用を編集する際は必ず「保存」してください。<br>
+			・種別を選択肢から選ぶ際は必ず代替欄を空白にしてください。<br>
+		</p>
+		<hr>
 		<h2>更新履歴</h2>
 		<ul>
+			<li>
+				<b>release - 1.2 (2023/02/14)</b>
+				<ul>
+					<li>全体的な配色と一部レイアウトを変更</li>
+					<li>ドラッグ&ドロップ可能であることを分かりやすく明示</li>
+					<li>ダイヤ情報の初期値を変更</li>
+					<li>運用時刻編集欄で上下キー対応</li>
+					<li>運用時刻編集欄での時間シフト機能においてミスを修正</li>
+					<li>Twitter向けサムネイルを修正</li>
+				</ul>
+			</li>
 			<li>
 				<b>release - 1.1 (2023/02/13)</b>
 				<ul>
@@ -165,23 +200,24 @@
 				<b>release - 1.0 (2023/02/09)</b>
 			</li>
 		</ul>
-		<p id="p_msg">2023/2/13 1830</p>
+		<hr>
+		<p id="p_msg">2023/2/14 1535</p>
 		<p>Made by 芽河製作所 Twitter: <a href="https://twitter.com/Arrk_YR" target="_blank">@Arrk_YR</a></p>
 	</div>
 	<!-- <div style="min-height: 300px;">
 		<textarea id="exportData" style="width: 100%; position: fixed;bottom: 0;resize: none;background-color: #ccc;" rows="10"></textarea>	
 	</div> -->
 	<div id="opEdit" style="display: none;">
-		<div style="position: fixed;width: inherit;padding-right: 1em;font-weight: bold;">
+		<div style="position: fixed;background-color: white;width: calc(60% - 2em);min-width: 32em;padding-right: 1em;font-weight: bold;">
 			<div style="display: flex;font-size: 1.5em;">
 				<span style="margin:auto">運用番号</span>
 				<input type="text" class="field" id="opName" value="161" style="text-align: center;width: 200px;flex-grow: 2;">
-				<input type="button" value="保存" class="btn" style="float: right;" onclick="closeOpEdit(); location.href='#opSummary'">
+				<input type="button" value="保存" class="btn2" style="float: right;" onclick="closeOpEdit(); location.href='#opSummary'">
 			</div>
 			<h3 id="opSection">A → B</h3>
 			<hr style="margin: 10px;clear: both;">
 		</div>
-		<section style="margin-top: 6em;">
+		<section style="margin-top: 6.5em;">
 			<p>
 				種別：
 				<select id="slType" class="select" style="width:7em" onchange="refreshOpEdit(0)">
@@ -213,6 +249,7 @@
 				以後の時間をずらす
 			</p>
 			<hr style="margin: 10px;">
+			<p>Tips: 時刻欄を上下キーで1分単位でずらせるようになりました</p>
 			<table style="margin: auto;" id="opEditor">
 			</table>
 			<hr style="margin: 10px;">
@@ -228,10 +265,10 @@
 			<p>
 				<input type="number" class="field num" id="opShiftTime" value="1200">
 				秒ずらして
-				<input type="button" class="btn" value="複製する" onclick="doublicateOp()">
+				<input type="button" class="btn2" value="複製する" onclick="doublicateOp()">
 			</p>
 			<p>
-				<input type="button" class="btn" value="この運用を削除する" onclick="deleteOp()">
+				<input type="button" class="btn2" value="この運用を削除する" onclick="deleteOp()">
 			</p>
 		</section>
 	</div>
