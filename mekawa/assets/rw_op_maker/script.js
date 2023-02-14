@@ -26,9 +26,15 @@ function fileRead() {
 
 // 2-A. 新規作成
 function makeNew() {
+	const now = new Date();
+	const year = now.getFullYear();
+	const month = ('0' + (now.getMonth() + 1)).slice(-2);
+	const day = ('0' + now.getDate()).slice(-2);
+	const formattedDate = `${year}年${month}月${day}日`;
+
 	jsonData = {
-		"copName" : "架空鉄道ナンタラ",
-		"description" : "運行表の説明",
+		"copName" : "架空鉄道なんとか",
+		"description" : formattedDate + " 改正",
 		"colors" : {
 			"普通" : "#222",
 			"快速" : "#f00"
@@ -97,19 +103,19 @@ function applyChange(){
 let colorPalette = new Object();
 function setType(){
 	colorPalette = new Object();
-	let elemColorPalette = '<h2>種別設定</h2><input class="btn" type="button" value="追加" onclick="addType()"><input  class="btn" type="button" value="削除" onclick="delType()"><table>';
+	let elemColorPalette = '<hr><h2>種別設定</h2><input class="btn" type="button" value="追加" onclick="addType()"><input  class="btn" type="button" value="削除" onclick="delType()"><table>';
 	let colorSet = Object.entries(jsonData.colors);
 	for(let i = 0; i < colorSet.length; i++){
 		colorSet[i][1] = colorCodeFormat(colorSet[i][1]);
 		elemColorPalette += '<tr><td><input class="field" type="text" id="type_'+ i +'" value="' + colorSet[i][0] + '" onchange="editType('+ i +')"></td><td> '+ '<input type="color" name="cp" id="colorPicker_'+ i +'" value="' + colorSet[i][1] + '" onchange="cpChange('+ i +')"></td><td><input class="field" type="text" id="colorCode_'+ i +'" value="'+ colorSet[i][1] +'" onchange="editType('+ i +')"></td></tr>';
 	}
 	elemColorPalette += '</table>';
-	cons('colorSet:');
-	cons(colorSet);
+	// cons('colorSet:');
+	// cons(colorSet);
 	for (let i = 0; i < colorSet.length; i++) {
 		colorPalette[colorSet[i][0]] = colorSet[i][1];
 	}
-	cons(colorPalette);
+	// cons(colorPalette);
 	secCfgType.innerHTML = elemColorPalette;
 
 	let elemSlType = $('slType');
@@ -123,17 +129,17 @@ function setType(){
 //3-C. 駅設定
 let stnOptions = "";
 function setStns(){
-	secCfgStns.innerHTML = '<h2>駅設定</h2>'
+	secCfgStns.innerHTML = '<hr><h2>駅設定</h2>'
 	let sections = Object.values(jsonData.sections);
-	cons(sections);
+	// cons(sections);
 	let elemStns = '<table>\n';
 	for (let i = 0; i < sections.length; i++) {
-		elemStns += '<tr><td colspan="4">------------</td></tr>\n'
+		elemStns += ''
 		+'<tr><td colspan="4"><input class="field" id="elemSecName_'+ i +'" type="text" value="' + sections[i].name + '" style="width:100%" onchange="editSecName('+i+')"></td>'
-		+'<td><input class="btn2" type="button" value="上へ" onclick="sortSections('+i+', -1)">'
-		+'<input class="btn2" type="button" value="下へ" onclick="sortSections('+i+', 1)">'
-		+'<input class="btn2" type="button" value="複製" onclick="copySection('+i+')">'
-		+'<input  class="btn2" type="button" value="削除" onclick="deleteSection('+i+')"></td></tr>\n';
+		+'<td><span><input class="btn2" type="button" value="上へ" onclick="sortSections('+i+', -1)">'
+		+'<input class="btn2" type="button" value="下へ" onclick="sortSections('+i+', 1)"></span>'
+		+'<span><input class="btn2" type="button" value="複製" onclick="copySection('+i+')">'
+		+'<input  class="btn2" type="button" value="削除" onclick="deleteSection('+i+')"></span></td></tr>\n';
 		elemStns += '<tr><th style="width:3em"></th><th>主要駅</th><th>駅名</th><th>距離(m)</th></tr>\n'
 		for (let j = 0; j < sections[i].stations.length; j++) {
 			const stn = sections[i].stations[j];
@@ -145,8 +151,9 @@ function setStns(){
 			+'<td style="text-align:center;"><input type="checkbox" id="stnImportance_'+ i +'_'+ j +'" style="transform:scale(2)" '+ checked +' onchange="changeStnInfo('+ i +', '+ j +',0)"></td>'
 			+'<td><input class="field" id="stnName_'+ i +'_'+ j +'" type="text" value="' + stn.name + '" onchange="changeStnInfo('+ i +', '+ j +',1)"></td>'
 			+'<td><input class="field" id="distance_'+ i +'_'+ j +'" type="number" value="' + stn.dist + '" style="text-align:right" onchange="changeStnInfo('+ i +', '+ j +',2)"></td>'
-			+'<td><input class="btn" type="button" value="上へ" onclick="sortStations('+ i +', '+ j +',-1)"><input class="btn" type="button" value="下へ" onclick="sortStations('+ i +', '+ j +',1)"><input class="btn" type="button" value="複製" onclick="copyStation('+ i +', '+ j +')"><input  class="btn" type="button" value="削除" onclick="deleteStation('+ i +', '+ j +')"></td></tr>\n';
+			+'<td><span><input class="btn" type="button" value="上へ" onclick="sortStations('+ i +', '+ j +',-1)"><input class="btn" type="button" value="下へ" onclick="sortStations('+ i +', '+ j +',1)"></span><span><input class="btn" type="button" value="複製" onclick="copyStation('+ i +', '+ j +')"><input  class="btn" type="button" value="削除" onclick="deleteStation('+ i +', '+ j +')"></td></span></tr>\n';
 		}
+		elemStns += '<tr><td colspan="5" style="height:1em"><hr></td></tr>\n'
 	}
 	elemStns += '</table>'
 	// cons(elemStns);
@@ -172,10 +179,10 @@ function setOps(){
 		let opColor = colorCodeFormat(opData.color) ?? colorPalette[opData.type] ?? "#222222";
 		elemOpDetail += '<div style="text-align:center;background-color:'+ opColor +'10;border-right:solid 1px; #888" id="operation'+ i +'">'
 		+ '<table class="opTable" style="border-left:solid 10px '+ opColor +'">'
-			+ '<tr><th>運番</th><th>' + opData.opNum + '</th><th><input class="btn" type="button" value="編集" onclick="showOpEditView('+ i +')"></th></tr>'
+			+ '<tr><th>運番</th><th>' + opData.opNum + '</th><th><input class="btn2" type="button" value="編集" onclick="showOpEditView('+ i +')"></th></tr>'
 			+ '<tr><td>種別</td><td>' + (opData.type ?? "普通") + '</td><td><input class="btn" type="button" value="右へ" onclick="sortOperations('+ i +', 1)"></td></tr>'
 			+ '<tr><td>色</td><td>' + opColor + '</td><td><input class="btn" type="button" value="左へ" onclick="sortOperations('+ i +', -1)"></td></tr>'
-			+ '<tr><td>前の</td><td>' + (opData.opPrevNum ?? "") + '</td><td><input class="btn" type="button" value="複製" onclick="doublicateOpDirect('+ i +')"></td></tr>'
+			+ '<tr><td>前の</td><td>' + (opData.opPrevNum ?? "") + '</td><td><input class="btn2" type="button" value="複製" onclick="doublicateOpDirect('+ i +')"></td></tr>'
 			+ '<tr><td>次の</td><td>' + (opData.opNextNum ?? "") + '</td><td><input class="btn" type="button" value="削除" onclick="deleteOpDirect('+ i +')"></td></tr>'
 		+ '</table><table class="opTable">'
 		+ '<tr><th>停車駅</th><th>着時刻</th><th>発時刻</th></tr>';
@@ -193,8 +200,8 @@ function setOps(){
 		elemOpSumary += '</span>'
 		elemOpDetail += '</table></div>';
 	}
-	secOpSummary.innerHTML = '<h2>運用一覧</h2><p>' + elemOpSumary + '</p>';
-	secOpDetail.innerHTML = '<h2>運用詳細 (複製時のシフト時間:' + $('opShiftTime').value + '秒)</h2><div style="width:100%;overflow-x:scroll"><div style="display:flex;width:max-content">' + elemOpDetail + '</div></div>';
+	secOpSummary.innerHTML = '<hr><h2>運用一覧</h2><p>' + elemOpSumary + '</p>';
+	secOpDetail.innerHTML = '<hr><h2>運用詳細 (複製時のシフト時間:' + $('opShiftTime').value + '秒)</h2><div style="width:100%;overflow-x:scroll"><div style="display:flex;width:max-content">' + elemOpDetail + '</div></div><hr>';
 }
 
 //4 概要編集
@@ -438,7 +445,7 @@ function showOpEditView(opId){
 
 	// データを読み込み、反映させる
 	tmpOpData = jsonData.operations[editingOpId];
-	cons(tmpOpData);
+	// cons(tmpOpData);
 	$('opName').value = tmpOpData.opNum;
 	let secLength = tmpOpData.stops.length;
 	$('opSection').innerText = tmpOpData.stops[0].lineName + ' ' + tmpOpData.stops[0].stnName + ' → ' + tmpOpData.stops[secLength - 1].lineName + ' ' + tmpOpData.stops[secLength - 1].stnName;
@@ -471,8 +478,8 @@ function showOpEditorContent(){
 			+'</select><br>'
 		+'<span id="time_'+ i +'"></span>'
 		+'</td><td>'
-			+'着:<input type="text" id="editorArr_'+ i +'" class="opField num" onchange="changeOpStnInfo('+ i +', 1)" onfocus="detectFocusingTime('+ i +', 1)"><br>'
-			+'発:<input type="text" id="editorDep_'+ i +'" class="opField num" onchange="changeOpStnInfo('+ i +', 2)" onfocus="detectFocusingTime('+ i +', 2)">'
+			+'着:<input type="text" id="editorArr_'+ i +'" maxlength="6" class="opField num" onkeydown="editTime('+ i +', 1, event)" onchange="changeOpStnInfo('+ i +', 1)" onfocus="detectFocusingTime('+ i +', 1)"><br>'
+			+'発:<input type="text" id="editorDep_'+ i +'" maxlength="6" class="opField num" onkeydown="editTime('+ i +', 2, event)" onchange="changeOpStnInfo('+ i +', 2)" onfocus="detectFocusingTime('+ i +', 2)">'
 		+'</td><td>'
 			+'<select id="editorIsPassage_'+ i +'" class="select" onchange="changeOpStnInfo('+ i +', 4)">'
 				+'<option value="false">停車</option>'
@@ -484,7 +491,7 @@ function showOpEditorContent(){
 			+'</select>'
 		+'</td><td>'
 			+'<input type="button" class="btn" value="複製" onclick="editorCopyStn('+ i +')"><input type="button" class="btn" value="削除" onclick="editorDeleteStn('+ i +')"><br>'
-			+'備考:<input type="text" id="editorDesc_'+ i +'" class="field" style="width: calc(100% - 3em);" onchange="changeOpStnInfo('+ i +', 3)">'
+			+'備考<input type="text" id="editorDesc_'+ i +'" class="field" style="width: calc(100% - 3em);" onchange="changeOpStnInfo('+ i +', 3)">'
 		+'</td></tr>';
 	}
 	elemOpEditor.innerHTML = opEditorContent;
@@ -522,7 +529,7 @@ function changeOpStnInfo(pos, category){
 		if(value == "") value = null;
 		else{
 			let differenceTime = time2sec(value) - beforeShiftingTime;
-			cons(differenceTime);
+			// cons(differenceTime);
 			for (let i = 0; i < tmpOpData.stops.length; i++) {
 				// cons(pos + ", " + category + ", " + i , ", " + $('shiftBefore').checked);
 				if((i < pos && $('shiftBefore').checked) || (i > pos && $('shiftAfter').checked)){
@@ -544,13 +551,13 @@ function changeOpStnInfo(pos, category){
 		if(value == "") value = null;
 		else{
 			let differenceTime = time2sec(value) - beforeShiftingTime;
-			cons(differenceTime);
+			// cons(differenceTime);
 			for (let i = 0; i < tmpOpData.stops.length; i++) {
 				// cons(pos + ", " + category + ", " + i , ", " + $('shiftBefore').checked);
 				if((i < pos && $('shiftBefore').checked) || (i > pos && $('shiftAfter').checked)){
 					if(tmpOpData.stops[i].arrTime != null) tmpOpData.stops[i].arrTime = sec2time(time2sec(tmpOpData.stops[i].arrTime) + differenceTime);
 					if(tmpOpData.stops[i].depTime != null) tmpOpData.stops[i].depTime = sec2time(time2sec(tmpOpData.stops[i].depTime) + differenceTime);
-				}else if(i == pos && $('shiftAfter').checked){
+				}else if(i == pos && $('shiftBefore').checked){
 					if(tmpOpData.stops[i].arrTime != null) tmpOpData.stops[i].arrTime = sec2time(time2sec(tmpOpData.stops[i].arrTime) + differenceTime);
 				}
 			}
@@ -578,6 +585,27 @@ function changeOpStnInfo(pos, category){
 	}
 }
 
+// 7-D1 運用時刻をキーで変更する
+function editTime(pos, category, e){
+	// cons(pos + ', ' + category + ', ' + e.key);
+	let delta = 0;
+	if(e.key == 'ArrowUp') delta = 60;
+	else if(e.key == 'ArrowDown') delta = -60;
+	if(category == 1){
+		let value = $('editorArr_'+ pos ).value;
+		if(value != ''){
+			$('editorArr_'+ pos ).value = sec2time(time2sec(value) + delta);
+			changeOpStnInfo(pos, category);
+		} 
+	}else if(category == 2){
+		let value = $('editorDep_'+ pos ).value;
+		if(value != ''){
+			$('editorDep_'+ pos ).value = sec2time(time2sec(value) + delta);
+			changeOpStnInfo(pos, category);
+		} 
+	}
+}
+
 // 7-E 駅情報を複製する
 function editorCopyStn(pos){
 	let rawData = tmpOpData.stops[pos];
@@ -602,6 +630,7 @@ function editorDeleteStn(pos){
 		cons("区間が1つしかありません")
 	}
 }
+
 
 // 7-G 運用時刻をずらす
 function shiftOpTime(shiftTime){
@@ -679,6 +708,7 @@ function deleteOp(){
 	}
 }
 
+// 7-I1 運用を直接削除する
 function deleteOpDirect(pos){
 	editingOpId = pos;
 	deleteOp();
@@ -744,7 +774,7 @@ function closeOpEdit(){
 	tmpOpData.description = $('description').value;
 
 	cons("運行編集パネルを閉じます")
-	cons(tmpOpData);
+	// cons(tmpOpData);
 	jsonData.operations.splice(editingOpId, 1, tmpOpData);
 	applyChange();
 	$('opEdit').setAttribute('style', 'display:none');
